@@ -1,0 +1,114 @@
+    /* Basic styling for the autocomplete container */
+    .autocomplete-container {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 4px;
+  }
+
+  .autocomplete-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    min-width: 150px;
+
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    border: 1px solid #ccc;
+    border-top: none;
+    z-index: 10;
+    background: #fff;
+    max-height: 150px;
+    overflow-y: auto;
+
+}
+
+.autocomplete-list div {
+    padding: 8px;
+    cursor: pointer;
+
+}
+
+.multiselect-tag {
+
+    background: #007bff;
+
+    color: #fff;
+
+    padding: 5px;
+
+    border-radius: 3px;
+
+    margin: 3px;
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+.multiselect-tag span {
+
+    margin-left: 5px;
+
+    cursor: pointer;
+
+}
+  /* Style the autocomplete items */
+  .autocomplete-items {
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      border-bottom: none;
+      border-top: none;
+      z-index: 99;
+      /* Position the autocomplete items to be below the input */
+      top: 100%;
+      left: 0;
+      right: 0;
+  }
+
+  .autocomplete-items div {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #fff;
+      border-bottom: 1px solid #d4d4d4;
+  }
+
+  /* When hovering an item */
+  .autocomplete-items div:hover {
+      background-color: #e9e9e9;
+  }
+
+  /* When selected an item */
+  .autocomplete-active {
+      background-color: DodgerBlue !important;
+      color: #ffffff;
+  }
+
+  /* Multiselect tags */
+  .multiselect-tags {
+    padding: 0;
+    width: max-content;
+    padding: 0 1rem 0 0;
+}
+
+  .multiselect-tag {
+    background-color: #007bff;
+    color: #fff;
+    padding: 1px 3px;
+    /* border-radius: 15px; */
+    margin: 2px;
+    display: inline-block;
+}
+
+.multiselect-tag span {
+    margin-left: 8px;
+    cursor: pointer;
+}
