@@ -7,46 +7,39 @@ use \Tsugi\Core\LTIX;
 $LAUNCH = LTIX::requireData();
 $p = $CFG->dbprefix;
 
-
 // get the course by context on AMA,
 $course_code = 'ECO1011S_55';
 
 // Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send'])) {
-    // Retrieve and sanitize the form data
-    $courses = isset($_POST['all-courses']) ? htmlspecialchars($_POST['all-courses']) : '';
-    $emails = isset($_POST['all-emails']) ? htmlspecialchars($_POST['all-emails']) : '';
+if ( isset($_POST['send'])) {
+// Retrieve and sanitize the form data
+$courses = isset($_POST['all-courses']) ? htmlspecialchars($_POST['all-courses']) : '';
+$emails = isset($_POST['all-emails']) ? htmlspecialchars($_POST['all-emails']) : '';
 
-    // Validate form data
-    if (empty($courses) || empty($emails)) {
+// Validate form data
+if (empty($courses) || empty($emails)) {
         $_SESSION['error'] = "Please fill out all required fields.";
         header('Location: '.addSession('index.php'));
         return;
-    } else {
+} else {
         // add to table
         $stmt = $PDOX->prepare("INSERT INTO {$p}kycs_reports_on_demand
         (requester_id, course_codes, email_to, created_at)
         VALUES (:RI, :CC, :EM, NOW())");
 
         // Bind parameters
-        $stmt->bindParam(':RI', $USER->id); // Assuming $requester_id is defined elsewhere
+        $stmt->bindParam(':RI', $USER->id); // Assuming $USER->id is the requester ID
         $stmt->bindParam(':CC', $courses);
         $stmt->bindParam(':EM', $emails);
 
         // Execute the statement
-
-        $stmt->execute();
-        // Split comma-separated emails into an array
-        $emailArray = array_map('trim', explode(',', $emails));
-
-        // Display the retrieved data
-        echo "<p>Selected Courses: $courses</p>";
-        echo "<p>Emails:</p><ul>";
-        foreach ($emailArray as $email) {
-            echo "<li>$email</li>";
+        if ($stmt->execute()) {
+            $_SESSION['success'] = "Report has been generated";
+            echo json_encode(['status' => 'success', 'message' => 'Report has been generated']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Database error']);
         }
-        echo "</ul>";
-
+        $_SESSION['success'] = "Report has been generated";
     }
 }
 
@@ -63,28 +56,37 @@ $OUTPUT->welcomeUserCourse();
 
 ?>
 
-
+<!-- initial generate button -->
+<button type="button" class="btn btn-primary" type="button" data-toggle="collapse" data-target="#FormCollapse" aria-expanded="false" aria-controls="FormCollapse">Generate Form</button>
 <!-- Form  -->
-<form method="post">
-    Select Course/s:
-    <input id="course-input" type="text" name="all-courses" placeholder="Courses"><br/>
-    Emails:
-    <div class="autocomplete-container">
-        <div class="multiselect-tags" id="tags"></div>
-        <input type="text" id="autocomplete-input" placeholder="search to email ...">
-        <div id="autocomplete-list" class="autocomplete-items"></div>
+<div class="collapse" id="FormCollapse">
+    <form method="post" id="kycsForm">
+        <div class="form-group">
+            <label for="course-input">Selected Course:</label>
+            <input id="course-input" type="text" name="all-courses" placeholder="Courses" readonly>
+        </div>
+        <div class="form-group">
+            <label for="course-input">Emails:</label>
+            <div class="autocomplete-container">
+                <div class="multiselect-tags" id="tags"></div>
+                <input type="text" id="autocomplete-input" placeholder="search to email ...">
+                <div id="autocomplete-list" class="autocomplete-items"></div>
+            </div>
+        </div>
+        <input type="hidden" name="all-emails" id="all-emails"><br/>
+        <input type="submit" name="send" value="Generate">
+    </form>
     </div>
-    <input type="hidden" name="all-emails" id="all-emails"><br/>
-    <input type="submit" name="send" value="Generate">
-</form>
-
+</div>
+<!-- create alert popupdiv -->
+<div id="response"></div>
 <?php
 $OUTPUT->topNav();
 
 $OUTPUT->footerStart();
 
 ?>
-<script src="<?php echo $CFG->staticroot; ?>/scripts/jquery.autocomplete.multiselect.js"></script>
+<!-- <script src="<?php echo $CFG->staticroot; ?>/scripts/jquery.autocomplete.multiselect.js"></script> -->
 <script>
 
     // Function to fetch data from JSON file
@@ -235,7 +237,39 @@ function initializeAutocompleteMultiselect(emails, initialSelectedEmail = null) 
             // Initialize autocomplete and multiselect with emails
             initializeAutocompleteMultiselect(emails, courseEmail);
         }
+// Form submission
+document.getElementById('kycsForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting the traditional way
 
+    var courses = document.getElementById('course-input').value;
+    var emails = document.getElementById('all-emails').value;
+
+    var xhr = new XMLHttpRequest();
+    // TODO - Check this
+    xhr.open('POST', 'index.php', true);  //
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+            var responseDiv = document.getElementById('response');
+            if (response.status === 'success') {
+                responseDiv.innerHTML = '<p>' + response.message + '</p>';
+            } else {
+                responseDiv.innerHTML = '<p>' + response.message + '</p>';
+            }
+        } else if (xhr.readyState === 4) {
+            document.getElementById('response').innerHTML = '<p>An error occurred: ' + xhr.statusText + '</p>';
+        }
+    };
+
+    var data = JSON.stringify({
+        courses: courses,
+        emails: emails
+    });
+
+    xhr.send(data);
+});
 // Call the main function to kick off the process
 main();
 
