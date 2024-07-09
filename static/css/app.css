@@ -33,7 +33,6 @@
 .autocomplete-list div {
     padding: 8px;
     cursor: pointer;
-
 }
 
 .multiselect-tag {
@@ -112,6 +111,64 @@
     margin-left: 8px;
     cursor: pointer;
 }
-form#kycsForm {
-    margin: 2rem 0;
+
+form#kycs_settings_form input#classlist-input, input#username-input, input#password-input {
+    width: 100%;
+}
+.modal-header, .modal-content, .modal-body, .modal-footer{
+    background: #fff;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    margin: 10px 0;
+}
+.card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.card-img-top {
+    width: 100%;
+    height: auto;
+}
+.btn-container {
+    margin-top: auto;
+    text-align: center;
+}
+
+
+/* flex */
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+.flex-container > div {
+    background-color: #f1f1f1;
+    width: 17.75rem;
+    min-height: 15rem;
+    margin: 0.625rem;
+    text-align: center;
+    line-height: 75px;
+    font-size: 30px;
+}
+.flex-container > div:hover,
+.flex-container > div:focus {
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 14px 1px;
+    transform: translateY(-4px);
+}
+.report-image {
+    max-width: 100%; /* Ensures the image scales down with the container */
+    height: auto; /* Maintains aspect ratio */
+}
+.reports-button {
+    font-weight: 100;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+}
+select#semester-select {
+    margin-bottom: 1rem;
 }
