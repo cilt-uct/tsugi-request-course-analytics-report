@@ -64,12 +64,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //  move to separete file
     function trigger_kycs_report($data){
         // get below from auth.pl
-        $remoteServer = 'srvubuclt001.uct.ac.za';
+        $remoteServer = '';
         $port = 22;
-        // $username = 'root';
-        // $password = 'feimR0nd.';
-        $username = '01482222';
-        $password = '!maniAnani14!maniAnani14';
+        // $username = '';
+        // $password = '.';
+        $username = '';
+        $password = '';
         // $pythonFilePath = '/usr/local/src/bo-reports/run.py';
         $remoteScriptPath = '/usr/local/src/bo-reports/ondemand.sh';
 
