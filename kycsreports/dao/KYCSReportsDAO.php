@@ -60,29 +60,19 @@ class KYCSReportsDAO {
 
     // store run kycs reports
     public function runkycsreport($requester_id, $course_id, $data) {
-        $sql = "INSERT INTO {$this->p}reports_kycs_jobs
-                (requester_id, course_id, data, created_at)
-                VALUES (:requester_id, :course_id, :data, NOW())
-                ON DUPLICATE KEY UPDATE
-                course_id = VALUES(course_id),
-                data = VALUES(data),
-                created_at = NOW()";
-
-        $stmt = $this->PDOX->prepare($sql);
-        var_dump($data);
-        var_dump($sql);
-        var_dump($stmt);
-        $stmt->bindParam(':requester_id', $requester_id);
-        $stmt->bindParam(':course_id', $course_id); // Ensure this line is present
-        $stmt->bindParam(':data', $data);
-
-        if ($stmt->execute()) {
-            return ['status' => 'success', 'message' => 'Report has been generated'];
-        } else {
-            $errorInfo = $stmt->errorInfo();
-            error_log('SQL error: ' . json_encode($errorInfo));
-            return ['status' => 'error', 'message' => 'Database error: ' . $errorInfo[2]];
+        if (is_array($data)) {
+            $data = json_encode($data);
         }
-    }
+            try {
+                $this->PDOX->queryDie("INSERT INTO {$this->p}reports_kycs_jobs
+                (requester_id, course_id, data, created_at)
+                VALUES (:requester_id, :course_id, :data, NOW())",
+                    array(':requester_id' => $requester_id, ':course_id' => $course_id, 'data' => $data));
+
+                return TRUE;
+            } catch (PDOException $e) {
+                return FALSE;
+            }
+        }
 
 }

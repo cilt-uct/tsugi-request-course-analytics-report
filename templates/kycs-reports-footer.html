@@ -1,20 +1,25 @@
-    <script src="{{$script}}" type="text/javascript"></script>
-
+<script src="{{$script}}" type="text/javascript"></script>
 
 <script type="text/javascript">
     $(document).ready(function(){
 
-    let responseData  = {{ json_encode($allrecepients) }};
+    let responseData  = {{ $allrecepients }};
+    //let responseData  = {{ json_encode($allrecepients) }};
+    //console.log(typeof responseData);
 
-    let data = responseData.data;
+    if (Array.isArray(responseData)) {
+        //console.log(responseData);
 
-    if (Array.isArray(data)) {
         // Populate the select element with options
         let $multiselectTo = $('#multiselect_to');
-        data.forEach(function(recipient) {
+        responseData.forEach(function(recipient) {
             let optionText = recipient.FirstName + " " + recipient.LastName + " (" + recipient.Email + ")";
             let optionValue = recipient.Email; // or any other unique identifier
-            let $option = $('<option>').val(optionValue).text(optionText);
+            let $option = $('<option>')
+                .val(optionValue)
+                .text(optionText)
+                .attr('data-firstname', recipient.FirstName)
+                .attr('data-lastname', recipient.LastName);
             $multiselectTo.append($option);
         });
 
@@ -29,29 +34,30 @@
             }
         });
     } else {
-        console.error('Data is not an array:', data);
+        console.error('Data is not an array:', responseData);
     }
-
-
-
-    });
+});
 
      // Form submission
-     function submitForm(formId) {
-        let kycsFormUrl = '{{$kycsformurl}}';
-        console.log(kycsFormUrl);
+     //function submitForm(formId) {
+        $('#kycs_generate_form').on('submit', function(event) {
+
+        event.preventDefault();
+
 
         var selectedOptions = [];
-        $('#' + formId + ' #multiselect option').each(function() {
+        $('#multiselect option').each(function() {
             var email = $(this).val();
-            var fullname = $(this).text().split(' (')[0]; // Assuming the format is "Full Name (email)"
-            selectedOptions.push({ email: email, fullname: fullname });
+            var firstname = $(this).data('firstname');
+            var lastname = $(this).data('lastname');
+            selectedOptions.push({ email: email, firstname: firstname, lastname: lastname });
+            //selectedOptions.push($(this).val());
         });
 
-        var formIdValue = $('#' + formId + ' input[name="form_id"]').val();
-        var requesterId = $('#' + formId + ' input[name="requester_id"]').val();
-        var siteIdValue = $('#' + formId + ' input[name="site_id"]').val();
-        var semesterValue = $('#' + formId + ' #semester-select').val();
+        var formIdValue = $('#kycs_generate_form input[name="form_id"]').val();
+        var requesterId = $('#kycs_generate_form input[name="requester_id"]').val();
+        var siteIdValue = $('#kycs_generate_form input[name="site_id"]').val();
+        var semesterValue = $('#kycs_generate_form select[name="semester"]').val();
 
         var selectedData = {
             'to': selectedOptions,
@@ -60,32 +66,29 @@
             'site_id': siteIdValue,
             'semester': semesterValue
         };
-
-        console.log("Selected Data: ", selectedData);
+        console.log(selectedData);
 
         $.ajax({
+            url: '{{$kycsformurl}}',
             type: 'POST',
-            url: kycsFormUrl,
             contentType: 'application/json',
             data: JSON.stringify(selectedData),
             success: function(response) {
-                alert(response);  // Log the raw response
-                var responseDiv = document.getElementById('response');
-                try {
-                    var jsonResponse = JSON.parse(response);
-                    alert(jsonResponse);
-                    responseDiv.innerHTML = '<p>' + jsonResponse.message + '</p>';
-                } catch (error) {
-                    alert(error);
-                    responseDiv.innerHTML = '<p>An error occurred: Invalid JSON response</p>';
-                }
+                var success = response.success;
+                var data = response.data;
+                document.getElementById('response').innerHTML = '<p>Data: ' + data + '</p>';
+                $('#kycsReportsModal').modal('hide');
+
+                // Refresh the page
+                window.location.reload();
             },
             error: function(xhr, status, error) {
-                alert(error);
+                console.log("Error: ", error);
                 document.getElementById('response').innerHTML = '<p>An error occurred: ' + error + '</p>';
             }
         });
-    }
+    });
+
 
 
 </script>

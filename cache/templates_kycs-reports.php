@@ -1,4 +1,5 @@
 <?php class_exists('Template') or exit; ?>
+<!-- default table -->
 <table class="table table-bordered table-rounded">
     <thead class="bg-info">
         <tr>
@@ -15,6 +16,7 @@
         </tr>
 </table>
 
+<!-- results table -->
 <!-- modal -->
 <div class="modal fade" id="kycsReportsModal" tabindex="-1" role="dialog" aria-labelledby="kycsReportsModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -60,7 +62,7 @@
                     <input type="hidden" name="site_id" id="site_id" value="<?php echo $siteid ?>">
                     <input type="hidden" name="requester_id" id="requester_id" value="<?php echo $requesterid ?>">
                     <button type="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success" id="btnSendReportsp" name="btnSendReports" onclick="submitForm('kycs_generate_form')">Send Reports</button>
+                    <button type="submit" class="btn btn-success" id="btnSendReportsp" name="btnSendReports">Send Reports</button>
                 </div>
             </form>
             <div id="response"></div>

@@ -1,9 +1,12 @@
 <div class="flex-container">
-    {% foreach ($reports as $rep) {
-        $title = !empty($rep['title']) ? $rep['title'] : '';
-        $url = !empty($rep['url']) ? $rep['url'] : '';
-        $description = !empty($rep['description']) ? $rep['description'] : '';
-        print "<div><a href='". $url ."'><img src='". $rep['img'] ."' class='report-image'><h5>". $rep['title'] ."</h5></a></div>";
-    }
-    %}
+    {% foreach($reports as $rep): %}
+        {% if($rep["active"]) { %}
+            <div>
+                <a href="{% print($rep['url']) %}">
+                    <img src="{% print($rep['img']) %}" class='report-image'>
+                    <h5>"{% print($rep['title']) %}"</h5>
+                </a>
+            </div>
+        {% } %}
+    {% endforeach; %}
 </div>

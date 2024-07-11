@@ -21,21 +21,28 @@ $tool['csv_output_folder'] = 'outputfolder';
 $tool['msg_template_folder'] = 'templatefolder';
 // classlist url
 $tool['classliturl'] = 'classliturl';
+$tool['coursedetailsurl'] = 'coursedetailsurl';
+
 // middleware settings
 $tool['middleware_username'] = 'username';
 $tool['middleware_password'] = 'password';
+
+// server details
+$tool['bo_server_host'] = 'bo_server_host';
+$tool['server_username'] = 'server_username';
+$tool['server_password'] = 'server_password';
 
 // reports
 $reports = [
     [
         'id' => 'BO001', # KYCS bo report template
-        'title' =>  'on-demand KYCS report',
+        'title' =>  'on-demand KYCS reportss',
         'description' => 'this is a short blurb for KYCS',
         'img' =>  '/static/reports/uct-dass-logo.png',
         'bo_id' =>  'cuid_AfiAp2gwe2VOrc1APJ6uD9M',
         'bo_email' =>  'BO001_body.eml',
         'url' => addSession('/kycsreports/kycs-reports.php'),
-        'active' =>  false,
+        'active' =>  true,
         'time' => [
             ['id' => 'Semester One', 'value' => '1st Semester'],
             ['id' => 'Semester Two', 'value' => '2nd Semester'],

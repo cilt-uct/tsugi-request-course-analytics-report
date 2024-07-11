@@ -1,0 +1,6 @@
+*.swp
+/_cache/*
+!/_cache/.keep
+cache/*.php
+!cache/*.keep
+.tool-config.php
