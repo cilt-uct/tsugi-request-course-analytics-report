@@ -59,15 +59,16 @@
         var requesterId = $('#kycs_generate_form input[name="requester_id"]').val();
         var siteIdValue = $('#kycs_generate_form input[name="site_id"]').val();
         var semesterValue = $('#kycs_generate_form select[name="semester"]').val();
+        var bo_id = $('#kycs_generate_form input[name="doc_id"]').val();
 
         var selectedData = {
             'to': selectedOptions,
             'form_id': formIdValue,
             'requester_id': requesterId,
             'site_id': siteIdValue,
-            'semester': semesterValue
+            'semester': semesterValue,
+            'bo_id': bo_id
         };
-        console.log(selectedData);
 
         $.ajax({
             url: '<?php echo $kycsformurl ?>',

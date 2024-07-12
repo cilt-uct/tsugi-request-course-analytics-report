@@ -36,11 +36,14 @@ function fetchWithBasicAuth($url, $username, $password) {
     return $data;
 }
 
-function trigger_kycs_report($remoteServer, $username, $password, $filepath){
+function trigger_kycs_report($remoteServer, $username, $password, $file){
     $port = 22;
 
     $remoteCsvDir = '/usr/local/src/bo-reports/ondemandcsv/';
     $remoteScriptPath = '/usr/local/src/bo-reports/ondemand.sh';
+    $remoteFile = $remoteCsvDir . basename($file);
+   // $remote_file = basename($file);
+
 
     // Establish SSH connection
     $connection = ssh2_connect($remoteServer, $port);
@@ -53,43 +56,39 @@ function trigger_kycs_report($remoteServer, $username, $password, $filepath){
         die('Authentication failed');
     }
 
-    $remoteCsvPath = $remoteCsvDir . basename($filepath);
+    $remoteCsvPath = $remoteCsvDir . basename($file);
 
     // snd file over
-    if (!ssh2_scp_send($connection, $filepath, $remoteCsvPath)) {
+    if (!ssh2_scp_send($connection, $file, $remoteCsvPath)) {
         die('File transfer failed');
     }
 
-    $command = $remoteScriptPath . ' ' . escapeshellarg($remoteCsvPath) . ' 2>&1';
+    // $command = $remoteScriptPath . ' ' . escapeshellarg($remoteCsvPath) . ' 2>&1';
+    // $command = $remoteScriptPath . ' ondemand_task ' . escapeshellarg($remoteCsvPath);
+
+    $escapedCsvPath = escapeshellarg($remoteFile);
+    $command = "$remoteScriptPath ondemand_task $escapedCsvPath";
     $stream = ssh2_exec($connection, $command);
 
     if (!$stream) {
         die('Execution failed');
     }
 
-    // Enable stream blocking and read the output
     stream_set_blocking($stream, true);
-    $output = stream_get_contents($stream);
-    $errorOutput = stream_get_contents($stream, 1024, SSH2_STREAM_STDERR);
 
-    // Close the stream
+    // Read the output
+    $output = stream_get_contents($stream);
+
+    // Close the streams
     fclose($stream);
 
-    // Output the result
-    echo "Output:\n" . $output;
-    if (!empty($errorOutput)) {
-        echo "Error Output:\n" . $errorOutput;
-    }
-
-    // Close the connection
-    ssh2_disconnect($connection);
 }
 
 function createCSV($filename, $data) {
     $file = fopen($filename, 'w');
 
     // Write headers
-    fputcsv($file, ['Course Code', 'Email', 'First Name', 'Last Name', 'Year'], ';');
+    fputcsv($file, ['Course Code', 'Email', 'First Name', 'Last Name', 'Year', 'bo_id'], ';');
 
     // Write data
     foreach ($data as $row) {

@@ -20,7 +20,7 @@ $course_offering =  $LAUNCH->ltiRawParameter('lis_course_offering_sourcedid', 'n
 // check lms ext here
 $lms_info = $LAUNCH->ltiRawParameter('tool_consumer_info_product_family_code');
 $receipients_data = [];
-// $allreceipients = [];
+$docid = '';
 
 if (str_contains($lms_info, 'sakai')) {
     // display any admin params needed here
@@ -40,8 +40,9 @@ if (str_contains($lms_info, 'sakai')) {
     $allreceipients = fetchWithBasicAuth($fullurl, $tool['middleware_username'], $tool['middleware_password']);
 
     foreach ($reports as $report) {
-        if (isset($report['kycsroles'])) {
+        if (isset($report['kycsroles']) || isset($report['bo_id'])) {
             $rolesToMatch = $report['kycsroles'];
+            $docid = $report['bo_id'];
             break;
         }
     }
@@ -65,6 +66,7 @@ $context = [
     'reports' => $reports,
     'siteid' => $site_id,
     'allrecepients' => $receipients_data,
+    'bo_id' => $docid,
     'kycsformurl' =>addSession(str_replace("\\","/",$CFG->getCurrentFileUrl('kycsreports/form.php'))),
 
 ];

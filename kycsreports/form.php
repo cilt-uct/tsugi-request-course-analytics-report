@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'First Name' => $recipient['firstname'],
                 'Last Name' => $recipient['lastname'],
                 'Year' => $year,
+                'bo_id' => $input['bo_id']
             ];
         }
 

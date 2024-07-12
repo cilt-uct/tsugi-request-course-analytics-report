@@ -37,7 +37,6 @@ class KYCSReportsDAO {
 
 
         $roles_string = implode(',', $roles);
-        //var_dump($rolesJson); // Debugging
 
         $stmt = $this->PDOX->prepare($sql);
 
