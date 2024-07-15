@@ -36,11 +36,12 @@ function fetchWithBasicAuth($url, $username, $password) {
     return $data;
 }
 
+// send csv to server
 function trigger_kycs_report($remoteServer, $username, $password, $file){
     $port = 22;
 
     $remoteCsvDir = '/usr/local/src/bo-reports/ondemandcsv/';
-    $remoteScriptPath = '/usr/local/src/bo-reports/ondemand.sh';
+    // $remoteScriptPath = '/usr/local/src/bo-reports/ondemand.sh';
     $remoteFile = $remoteCsvDir . basename($file);
    // $remote_file = basename($file);
 
@@ -67,7 +68,7 @@ function trigger_kycs_report($remoteServer, $username, $password, $file){
     // $command = $remoteScriptPath . ' ondemand_task ' . escapeshellarg($remoteCsvPath);
 
     $escapedCsvPath = escapeshellarg($remoteFile);
-    $command = "$remoteScriptPath ondemand_task $escapedCsvPath";
+    $command = "$escapedCsvPath";
     $stream = ssh2_exec($connection, $command);
 
     if (!$stream) {

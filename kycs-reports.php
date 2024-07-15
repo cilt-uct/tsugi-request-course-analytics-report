@@ -31,10 +31,7 @@ if (str_contains($lms_info, 'sakai')) {
 
 } else if (str_contains($lms_info, 'desire2learn')){
     //get all recepients
-    $query = "SELECT * FROM {$p}reports_ama_classlist_setting WHERE course_id = :course_id;";
 
-    $arr = array(':course_id' => $site_id);
-    $row = $PDOX->rowDie($query, $arr);
     $fullurl = $tool['classliturl'] . '' . $site_id;
 
     $allreceipients = fetchWithBasicAuth($fullurl, $tool['middleware_username'], $tool['middleware_password']);
