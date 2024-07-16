@@ -1,0 +1,65 @@
+<button class="btn reports-button btn-primary" type="button" data-toggle="collapse" data-target="#previousReports" aria-expanded="false" aria-controls="previousReports">
+    View reports data
+  </button>
+</p>
+<div class="collapse" id="previousReports">
+    <div class="card card-body">
+        <table class="table table-bordered table-rounded">
+            <thead class="bg-info">
+                <tr>
+                    <td style="width: 20vw;"> Requestor</td>
+                    <td style="width: 20vw;">Recepients</td>
+                    <td style="width: 20vw;">Status</td>
+                    <td style="width: 20vw;">Date Generated</td>
+                <tr>
+            </thead>
+            {% foreach($past_reports as $rep): %}
+            <tr>
+                <td>{% print($rep['requester_id']) %}</td>
+                <td class="emails">{% print($rep['data']) %}</td>
+                <td>{% print($rep['state']) %}</td>
+                <td>{% print($rep['created_at']) %}</td>
+            </tr>
+            {% endforeach; %}
+        </table>
+    </div>
+</div>
+
+<!-- email cleanup -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Select all <td> elements with class 'emails'
+        var emailCells = document.querySelectorAll('td.emails');
+
+        emailCells.forEach(function(td) {
+            // Extract the content from the <td> element
+            var jsonString = td.textContent.trim();
+
+            try {
+                // Parse the JSON string into a JavaScript object
+                var data = JSON.parse(jsonString);
+
+                // Initialize an array to hold the formatted results
+                var formattedResults = [];
+
+                // Iterate through the data array
+                data.forEach(function(item) {
+                    if (item.email && item.firstname && item.lastname) {
+                        // Format the result as "firstname lastname (email address)"
+                        formattedResults.push(item.firstname + ' ' + item.lastname + ' (' + item.email + ')');
+                    }
+                });
+
+                // Join formatted results with a comma separator
+                var resultString = formattedResults.join(', ');
+
+                // Replace the existing content with the formatted result string
+                td.textContent = resultString;
+            } catch (e) {
+                // Handle JSON parsing errors or other issues
+                console.error('Error processing JSON:', e);
+                td.textContent = 'Error parsing data';
+            }
+        });
+    });
+</script>

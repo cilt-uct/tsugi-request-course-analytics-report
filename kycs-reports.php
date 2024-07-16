@@ -22,6 +22,10 @@ $lms_info = $LAUNCH->ltiRawParameter('tool_consumer_info_product_family_code');
 $receipients_data = [];
 $docid = '';
 
+// get results
+$reports_data = $PDOX->allRowsDie("SELECT * FROM reports_kycs_jobs WHERE course_id = {$site_id}");
+$emails = array_column($reports_data, 'data');
+
 if (str_contains($lms_info, 'sakai')) {
     // display any admin params needed here
 
@@ -64,8 +68,8 @@ $context = [
     'siteid' => $site_id,
     'allrecepients' => $receipients_data,
     'bo_id' => $docid,
-    'kycsformurl' =>addSession(str_replace("\\","/",$CFG->getCurrentFileUrl('kycsreports/form.php'))),
-
+    'kycsformurl' => addSession(str_replace("\\","/",$CFG->getCurrentFileUrl('kycsreports/form.php'))),
+    'past_reports' => $reports_data
 ];
 
 $OUTPUT->header();
@@ -77,6 +81,11 @@ echo("<h1>on-demand KYCS report</h1>\n");
 $OUTPUT->topNav($menu);
 $OUTPUT->welcomeUserCourse();
 Template::view('templates/kycs-reports.html', $context);
+
+if (count($reports_data) > 0) {
+    Template::view('templates/kycs-past-reports.html', $context);
+}
+
 
 $OUTPUT->footerStart();
 
