@@ -1,3 +1,5 @@
 <?php class_exists('Template') or exit; ?>
 
-<link href="<?php echo $stylesheet ?>" rel="stylesheet" />
+<?php foreach($stylesheets as $style): ?>
+    <link href="<?php echo $style ?>" rel="stylesheet" />
+<?php endforeach; ?>

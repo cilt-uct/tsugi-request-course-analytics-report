@@ -25,6 +25,8 @@ function fetchWithBasicAuth($url, $username, $password) {
 
     curl_close($ch);
 
+    // Output the raw response for debugging
+
     // Decode JSON response into an associative array
     $data = json_decode($response, true);
 

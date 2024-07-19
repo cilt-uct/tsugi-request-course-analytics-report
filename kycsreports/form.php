@@ -30,33 +30,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $input = json_decode($rawInput, true);
 
+    $providers = explode(',', $input['providers']);
+    $providers = array_map('trim', $providers); // Remove any extra spaces
+
     $kycsreportsDAO = new KYCSReportsDAO($PDOX, $CFG->dbprefix);
 
-    $result['success'] = $kycsreportsDAO->runkycsreport($input['requester_id'], $input['site_id'], $input['to'])? 1 : 0;;
+    $result['success'] = $kycsreportsDAO->runkycsreport($input['requester_id'], $input['site_id'], $providers, $input['to'], $input['requester_fullname'], $input['report_type'])? 1 : 0;;
     $result['data'] = $result['success'] === 1 ? 'Inserted' : 'Error Inserting';
 
     // csv data, loop through everyon here
     if ($result['success'] === 1) {
-
 
         $dataForCSV = [];
         $courseCode = '';
 
         foreach ($input['to'] as $recipient) {
 
+            // used for testing with course with providers
+            // $site_id = 42271;
+            // $courseDetails = fetchWithBasicAuth($tool['coursesurl'] .'/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
+
             $courseDetails = fetchWithBasicAuth($tool['coursedetailsurl'] .'/'.$input['site_id'], $tool['middleware_username'], $tool['middleware_password']);
 
             $courseCode = explode('_', $courseDetails['data']['Code'])[0];
             $year = $courseDetails['data']['Semester']['Code'];
 
-            $dataForCSV[] = [
-                'Course Code' => $courseCode,
-                'Email' => $recipient['email'],
-                'First Name' => $recipient['firstname'],
-                'Last Name' => $recipient['lastname'],
-                'Year' => $year,
-                'bo_id' => $input['bo_id']
-            ];
+            foreach ($providers as $provider) {
+                $dataForCSV[] = [
+                    'Course Code' => $provider,
+                    'Email' => 'loyiso.ngqwebo@uct.ac.za',
+                    // 'Email' => $recipient['email'],
+                    'First Name' => $recipient['firstname'],
+                    'Last Name' => $recipient['lastname'],
+                    'Year' => $year,
+                    'bo_id' => $input['bo_id']
+                ];
+            }
         }
 
         $filename = "../csv/{$courseCode}_" . date('Y-m-d_H-i-s') . ".csv";

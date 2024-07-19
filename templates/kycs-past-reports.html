@@ -15,7 +15,7 @@
             </thead>
             {% foreach($past_reports as $rep): %}
             <tr>
-                <td>{% print($rep['requester_id']) %}</td>
+                <td>{% print($rep['requester_fullname']) %}</td>
                 <td class="emails">{% print($rep['data']) %}</td>
                 <td>{% print($rep['state']) %}</td>
                 <td>{% print($rep['created_at']) %}</td>

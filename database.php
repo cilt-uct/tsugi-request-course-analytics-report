@@ -9,18 +9,20 @@ $DATABASE_UNINSTALL = array(
 // Allow for a user to generate multiple course_codes and email_to fields
 // course_codes (type: text) and email_to (type: text)
 
-//amathuba_classlist_setting: [id, courseid, ama_classlisturl, modified_by(name), password, updated_at]
-
 $DATABASE_INSTALL = array(
     array(
         "{$CFG->dbprefix}reports_kycs_jobs",
         "CREATE TABLE IF NOT EXISTS `{$CFG->dbprefix}reports_kycs_jobs` (
          `id` INTEGER NOT NULL AUTO_INCREMENT,
          `course_id` INTEGER NOT NULL,
+         `provider_id` VARCHAR(30) NOT NULL,
          `requester_id` INTEGER NOT NULL,
+         `requester_name` VARCHAR(255) NOT NULL,
          `data` TEXT NOT NULL,
+         `report_type` VARCHAR(255) NOT NULL,
          `state` VARCHAR(255) NOT NULL,
          `created_at`   DATETIME NOT NULL,
+         `modified_at`   DATETIME NULL,
          PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8"
     ),

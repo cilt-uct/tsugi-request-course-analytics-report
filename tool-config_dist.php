@@ -20,8 +20,7 @@ $tool['active'] = TRUE; # if false will show coming soon page
 $tool['csv_output_folder'] = 'outputfolder';
 $tool['msg_template_folder'] = 'templatefolder';
 // classlist url
-$tool['classliturl'] = 'classliturl';
-$tool['coursedetailsurl'] = 'coursedetailsurl';
+$tool['coursesurl'] = 'coursesurl';
 
 // middleware settings
 $tool['middleware_username'] = 'username';
@@ -41,7 +40,7 @@ $reports = [
         'img' =>  '/static/reports/uct-dass-logo.png',
         'bo_id' =>  'cuid_AfiAp2gwe2VOrc1APJ6uD9M',
         'bo_email' =>  'BO001_body.eml',
-        'url' => addSession('/kycsreports/kycs-reports.php'),
+        'target' => 'kycsReportsModal',
         'active' =>  true,
         'time' => [
             ['id' => 'Semester One', 'value' => '1st Semester'],

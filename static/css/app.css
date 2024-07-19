@@ -140,35 +140,96 @@ form#kycs_settings_form input#classlist-input, input#username-input, input#passw
     text-align: center;
 }
 
-
+/* modal */
+#kycsReportsModal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0; /* No padding */
+}
+#kycsReportsModal .modal-header > div {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+#kycsReportsModal .modal-header h5 {
+    margin: 0;
+    flex: 1;
+    padding: 1rem;
+}
+#kycsReportsModal .modal-header select {
+    flex: 1;
+    margin-left: 15px;
+}
+#kycsReportsModal .modal-header .close {
+    margin-left: auto;
+    padding: 1rem; /* Adjust padding for better clickability */
+}
 /* flex */
 .flex-container {
     display: flex;
     flex-wrap: wrap;
 }
-.flex-container > div {
+.flex-container > a {
     background-color: #f1f1f1;
     width: 17.75rem;
-    min-height: 15rem;
+    min-height: 12rem;
     margin: 0.625rem;
     text-align: center;
     line-height: 75px;
     font-size: 30px;
 }
-.flex-container > div:hover,
-.flex-container > div:focus {
+.flex-container > a:hover,
+.flex-container > a:focus {
     box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 14px 1px;
     transform: translateY(-4px);
 }
 .report-image {
-    max-width: 100%; /* Ensures the image scales down with the container */
-    height: auto; /* Maintains aspect ratio */
+    max-width: 85%;
+    height: auto;
 }
 .reports-button {
     font-weight: 100;
     font-size: 1.2rem;
     line-height: 1.4rem;
 }
-select#semester-select {
-    margin-bottom: 1rem;
+
+/* accordion */
+.css_accordion input {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+  }
+  .css_accordioncontent {
+    height: 0;
+    overflow: hidden;
+    transition: all 0.35s;
+  }
+  .css_accordion input:checked ~ .css_accordioncontent {
+    /* max-height: 10rem; */
+    height: auto;
+    border-bottom: 1px solid #ccc;
+  }
+
+  /* results table styles */
+  button.btn.btn-primary.btn-chevron {
+    background: none;
+    border: none;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 100;
+}
+.btn-chevron::before {
+    content: '▲'; /* Downward arrow */
+    display: inline-block;
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}
+.btn-chevron.collapsed::before {
+    content: '▼'; /* Upward arrow */
+}
+/* selectpicker styles */
+.bootstrap-select button.btn.dropdown-toggle.btn-default {
+    line-height: 1rem;
+    font-weight: 100;
 }

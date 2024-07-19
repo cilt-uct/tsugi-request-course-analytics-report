@@ -1,0 +1,177 @@
+{% foreach($scripts as $script): %}
+    <script src="{{$script}}" type="text/javascript"></script>
+{% endforeach; %}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Populate multiselect options
+        let responseData = {{ $allrecepients }};
+
+        if (Array.isArray(responseData)) {
+            let $multiselectTo = $('#multiselect_to');
+            responseData.forEach(function(recipient) {
+                let optionText = recipient.FirstName + " " + recipient.LastName + " (" + recipient.Email + ")";
+                let optionValue = recipient.Email;
+                let $option = $('<option>')
+                    .val(optionValue)
+                    .text(optionText)
+                    .attr('data-firstname', recipient.FirstName)
+                    .attr('data-lastname', recipient.LastName);
+                $multiselectTo.append($option);
+            });
+
+            // Initialize multiselect plugin if used
+            $('#multiselect').multiselect({
+                search: {
+                    left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                    right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+                },
+                fireSearch: function(value) {
+                    return value.length > 3;
+                }
+            });
+        } else {
+            console.error('Data is not an array:', responseData);
+        }
+
+        // Populate selectpicker options
+        let coursesData = {{ $course_providers }};
+        let $selectPickerElement = $('#providers');
+
+        $('#kycsReportsModal').on('shown.bs.modal', function () {
+            $('.filter-option-inner-inner').text('Select Provider');
+        });
+
+
+        if (Array.isArray(coursesData.data)) {
+            coursesData.data.forEach(item => {
+                let $option = $('<option>')
+                    .val(item.provider)
+                    .text(item.provider)
+                    .attr('data-created-at', item.created_at);
+                $selectPickerElement.append($option);
+            });
+            // Refresh the selectpicker to apply the changes
+            $('.selectpicker').selectpicker('refresh');
+        } else {
+            console.error('coursesData.data is not an array:', coursesData.data);
+        }
+
+        // Validate multiselect and providers
+        function validateMultiselect() {
+            const selectedOptions = $('#multiselect option').length;
+            const selectPickers = $('#providers option:selected').length;
+            console.log("Selected Options: ", selectedOptions, " Select Pickers: ", selectPickers);
+            if (selectedOptions === 0 || selectPickers === 0) {
+                $('#btnSendReportsp').prop('disabled', true);
+                $('.error-message').show();
+                $('#multiselect_to').addClass('error');
+            } else {
+                $('#btnSendReportsp').prop('disabled', false);
+                $('.error-message').hide();
+                $('#multiselect_to').removeClass('error');
+            }
+        }
+
+        // Validate on page load
+        validateMultiselect();
+
+        // Validate on selection change for multiselect
+        $('#multiselect_rightAll, #multiselect_rightSelected, #multiselect_leftSelected, #multiselect_leftAll').click(function() {
+            setTimeout(validateMultiselect, 100);
+        });
+
+        // Validate on selection change for selectpicker
+        $('#providers').on('changed.bs.select', function () {
+            validateMultiselect();
+        });
+
+        // Remove default email from multiselect
+        const defaultEmail = "{{$instructor_email}}";
+        $('#multiselect_to option').each(function() {
+            let $option = $(this);
+            let email = $option.val();
+            if (email === defaultEmail) {
+                $('#multiselect').append($option.clone());
+                $option.remove();
+                validateMultiselect();
+            }
+        });
+
+        // Form submission
+        $('#kycs_generate_form').on('submit', function(event) {
+            event.preventDefault();
+
+            var selectedOptions = [];
+            $('#multiselect option').each(function() {
+                var email = $(this).val();
+                var firstname = $(this).data('firstname');
+                var lastname = $(this).data('lastname');
+                selectedOptions.push({ email: email, firstname: firstname, lastname: lastname });
+            });
+
+            var formIdValue = $('#kycs_generate_form input[name="form_id"]').val();
+            var requesterId = $('#kycs_generate_form input[name="requester_id"]').val();
+            var siteIdValue = $('#kycs_generate_form input[name="site_id"]').val();
+            var semesterValue = $('#kycs_generate_form select[name="semester"]').val();
+            var bo_id = $('#kycs_generate_form input[name="doc_id"]').val();
+            var fullname = $('#kycs_generate_form input[name="requester_fullname"]').val();
+            var selectedProviders = $('.btn.dropdown-toggle').attr('title');
+
+            var selectedData = {
+                'to': selectedOptions,
+                'form_id': formIdValue,
+                'requester_id': requesterId,
+                'site_id': siteIdValue,
+                'semester': semesterValue,
+                'bo_id': bo_id,
+                'requester_fullname': fullname,
+                'report_type': 'KYCS Report',
+                'providers': selectedProviders
+            };
+
+            $.ajax({
+                url: '{{$kycsformurl}}',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(selectedData),
+                success: function(response) {
+                    var success = response.success;
+                    var data = response.data;
+                    document.getElementById('response').innerHTML = '<p>Data: ' + data + '</p>';
+                    $('#kycsReportsModal').modal('hide');
+                    window.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.log("xhr: ", xhr);
+                    console.log("Status: ", status);
+                    console.log("Error: ", error);
+                    document.getElementById('response').innerHTML = '<p>An error occurred: ' + error + '</p>';
+                }
+            });
+        });
+
+        // Accordion handling
+        $('#accordionExample .collapse').on('show.bs.collapse', function() {
+            $(this).prev('.card-header').find('.accordion-button').removeClass('collapsed');
+        }).on('hide.bs.collapse', function() {
+            $(this).prev('.card-header').find('.accordion-button').addClass('collapsed');
+        });
+
+        // Email cleanup
+        document.querySelectorAll('td.emails').forEach(function(td) {
+            var jsonString = td.textContent.trim();
+            try {
+                var data = JSON.parse(jsonString);
+                var formattedResults = data.map(function(item) {
+                    return item.firstname + ' ' + item.lastname + ' (' + item.email + ')';
+                });
+                td.textContent = formattedResults.join(', ');
+            } catch (e) {
+                console.error('Error processing JSON:', e);
+                td.textContent = 'Error parsing data';
+            }
+        });
+    });
+
+</script>

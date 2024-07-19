@@ -1,2 +1,4 @@
 
-<link href="{{ $stylesheet }}" rel="stylesheet" />
+{% foreach($stylesheets as $style): %}
+    <link href="{{ $style }}" rel="stylesheet" />
+{% endforeach; %}
