@@ -58,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($providers as $provider) {
                 $dataForCSV[] = [
                     'Course Code' => $provider,
-                    'Email' => 'loyiso.ngqwebo@uct.ac.za',
-                    // 'Email' => $recipient['email'],
+                    // 'Email' => 'loyiso.ngqwebo@uct.ac.za',
+                    'Email' => $recipient['email'],
                     'First Name' => $recipient['firstname'],
                     'Last Name' => $recipient['lastname'],
                     'Year' => $year,
