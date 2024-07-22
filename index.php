@@ -28,7 +28,7 @@ $emails = array_column($reports_data, 'data');
 $menu = false;
 
 // get course coude from middleware: use the following 42271 as example
-$site_id = 42271;
+// $site_id = 42271;
 $courseDetails = fetchWithBasicAuth($tool['coursesurl'] .'/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
 $courseproviders = fetchWithBasicAuth($tool['coursesurl'] .'providers/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
 // $allcourses = fetchWithBasicAuth($tool['allcourses'], $tool['middleware_username'], $tool['middleware_password']);
