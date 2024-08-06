@@ -18,21 +18,25 @@ $handledRoster = LTIX::populateRoster(false, true);
 // check lms ext here
 $lms_info = $LAUNCH->ltiRawParameter('tool_consumer_info_product_family_code');
 
-$receipients_data = [];
+$recipients_data = [];
 $docid = '';
-
-// get results
-$reports_data = $PDOX->allRowsDie("SELECT * FROM reports_kycs_jobs WHERE course_id = {$site_id}");
-$emails = array_column($reports_data, 'data');
 
 $menu = false;
 
-// get course coude from middleware: use the following 42271 as example
-// $site_id = 42271;
+// get course code from middleware: use the following 42271 as example
+if ($site_id == 6824) {
+    $site_id = 42271;
+}
+
 $courseDetails = fetchWithBasicAuth($tool['coursesurl'] .'/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
 $courseproviders = fetchWithBasicAuth($tool['coursesurl'] .'providers/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
-// $allcourses = fetchWithBasicAuth($tool['allcourses'], $tool['middleware_username'], $tool['middleware_password']);
 $courseCode = explode('_', $courseDetails['data']['Code'])[0];
+$year = $courseDetails['data']['Semester']['Code'];
+// get results
+$reports_data = $PDOX->allRowsDie("SELECT * FROM reports_kycs_jobs WHERE course_id = {$site_id}");
+$emails = array_column($reports_data, 'data');
+// runnung report
+$running_reports = $PDOX->allRowsDie("SELECT * FROM reports_kycs_jobs WHERE course_id = {$site_id} and state != 'Completed' ");
 
 // get results
 $reports_data = $PDOX->allRowsDie("SELECT * FROM reports_kycs_jobs WHERE course_id = {$site_id}");
@@ -41,7 +45,7 @@ if (str_contains($lms_info, 'sakai')) {
     // display any admin params needed here
 
     //get all recepients
-    $receipients_data = $PDOX->allRowsDie("SELECT lti_user.user_id,lti_user.displayname, context_id, lti_user.email, JSON_UNQUOTE(ifnull(JSON_EXTRACT(lti_user.`json`,'$.sourcedId'), LOWER(SUBSTRING(lti_user.email, 1, LOCATE('@', lti_user.email) - 1)))) as eid, user_key FROM lti_user,lti_membership
+    $recipients_data = $PDOX->allRowsDie("SELECT lti_user.user_id,lti_user.displayname, context_id, lti_user.email, JSON_UNQUOTE(ifnull(JSON_EXTRACT(lti_user.`json`,'$.sourcedId'), LOWER(SUBSTRING(lti_user.email, 1, LOCATE('@', lti_user.email) - 1)))) as eid, user_key FROM lti_user,lti_membership
     where lti_user.user_id=lti_membership.user_id and context_id={$CONTEXT->id} order by displayname");
 
 } else if (str_contains($lms_info, 'desire2learn')){
@@ -49,7 +53,7 @@ if (str_contains($lms_info, 'sakai')) {
 
     $fullurl = $tool['coursesurl'] . 'classlist/' . $site_id;
 
-    $allreceipients = fetchWithBasicAuth($fullurl, $tool['middleware_username'], $tool['middleware_password']);
+    $allrecipients = fetchWithBasicAuth($fullurl, $tool['middleware_username'], $tool['middleware_password']);
 
     foreach ($reports as $report) {
         if (isset($report['kycsroles']) || isset($report['bo_id'])) {
@@ -60,30 +64,34 @@ if (str_contains($lms_info, 'sakai')) {
     }
 
     // Filter users
-    $filteredRecipients = array_filter($allreceipients['data'], function($user) use ($rolesToMatch) {
+    $filteredRecipients = array_filter($allrecipients['data'], function($user) use ($rolesToMatch) {
         return in_array($user['ClasslistRoleDisplayName'], $rolesToMatch) && !empty($user['Email']);
     });
 
-    $receipients_data = json_encode(array_values($filteredRecipients));
-
+    $recipients_data = json_encode(array_values($filteredRecipients));
 }
 
 $context = [
     'instructor' => $USER->instructor,
     'requesterid' => $USER->id,
-    'requester_fullname' => $USER->firstname.' '.$USER->lastname,
-    'instructor_email' => $USER->email,
+    'requester_firstname' => $USER->firstname,
+    'requester_lastname' => $USER->lastname,
+    'requester_email' => $USER->email,
     'stylesheets' => [addSession('static/css/app.css'), addSession('static/css/bootstrap-select.min.css')],
     'scripts' =>    [addSession('static/js/multiselect.min.js'), addSession('static/js/bootstrap-select.min.js')],
     'reports' => $reports,
     'siteid' => $site_id,
-    'allrecepients' => $receipients_data,
+    'allrecepients' => $recipients_data,
     'bo_id' => $docid,
+    'year' => $year,
     'kycsformurl' => addSession(str_replace("\\","/",$CFG->getCurrentFileUrl('kycsreports/form.php'))),
     'past_reports' => $reports_data,
     'course_details_url' => $courseDetails,
     'course_code' => $courseCode,
-    'course_providers' => json_encode($courseproviders)
+    'course_providers' => $courseproviders['data'],
+    'course_providers_data' => json_encode($courseproviders),
+    'running_reports' => $running_reports,
+    'running_reports_data' => json_encode($running_reports)
 ];
 
 // admin section
@@ -95,7 +103,16 @@ if ($USER->instructor){
     $OUTPUT->bodyStart();
     $OUTPUT->topNav($menu);
     $OUTPUT->flashMessages();
-    echo("<p>Welcome to course analytics, please select a report that you would like to generate.</p>\n");
+    echo('<div class="container mt-5">
+    <div class="row align-items-center">
+        <div class="title col-md-6">
+            <h1 class="course-reports-heading">DASS Course Reports</h1>
+        </div>
+        <div class="col-md-6 text-right">
+            <a href="https://dass.uct.ac.za" target="_blank"><img src="static/reports/uct-dass-logo.png" alt="Logo" class="dass-logo img-fluid"></a>
+        </div>
+    </div>
+</div>');
 
     Template::view('templates/index.html', $context);
 

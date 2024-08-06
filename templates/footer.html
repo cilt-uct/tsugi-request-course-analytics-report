@@ -7,126 +7,70 @@
         // Populate multiselect options
         let responseData = {{ $allrecepients }};
 
-        if (Array.isArray(responseData)) {
-            let $multiselectTo = $('#multiselect_to');
-            responseData.forEach(function(recipient) {
-                let optionText = recipient.FirstName + " " + recipient.LastName + " (" + recipient.Email + ")";
-                let optionValue = recipient.Email;
-                let $option = $('<option>')
-                    .val(optionValue)
-                    .text(optionText)
-                    .attr('data-firstname', recipient.FirstName)
-                    .attr('data-lastname', recipient.LastName);
-                $multiselectTo.append($option);
-            });
+        $("input#kycsReports[type='radio']").each(function() {
+            var radioId = $(this).attr('id');
+            var targetDiv = $('div#' + radioId);
+            $("div#kycsReports").show()
+            $(this).prop('checked', true);
+            targetDiv.removeClass('hidden').addClass('visible');
+        });
 
-            // Initialize multiselect plugin if used
-            $('#multiselect').multiselect({
-                search: {
-                    left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-                    right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-                },
-                fireSearch: function(value) {
-                    return value.length > 3;
-                }
-            });
-        } else {
-            console.error('Data is not an array:', responseData);
-        }
+        // get providers, on radio click display providers
+        let coursesData = {{ $course_providers_data }};
 
-        // Populate selectpicker options
-        let coursesData = {{ $course_providers }};
         let $selectPickerElement = $('#providers');
 
-        $('#kycsReportsModal').on('shown.bs.modal', function () {
-            $('.filter-option-inner-inner').text('Select Provider');
-        });
-
-
+        total_providers = 0;
         if (Array.isArray(coursesData.data)) {
             coursesData.data.forEach(item => {
-                let $option = $('<option>')
-                    .val(item.provider)
-                    .text(item.provider)
-                    .attr('data-created-at', item.created_at);
-                $selectPickerElement.append($option);
+                // Create the checkbox input element
+                let $checkbox = $('<input type="checkbox" name="providers[]">').val(item.provider).attr('data-created-at', item.created_at).prop('checked', true);
+
+                // Create a label element associated with the checkbox
+                let $label = $('<div class="form-check"><label class="form-check-label"></label></div>')
+                    .text(item.provider + ' ' + item.term)
+                    .prepend($checkbox); // Place the checkbox before the label text
+
+                // Append the label (which includes the checkbox) to the select picker element
+                $selectPickerElement.append($label);
+                total_providers++;
             });
-            // Refresh the selectpicker to apply the changes
-            $('.selectpicker').selectpicker('refresh');
-        } else {
-            console.error('coursesData.data is not an array:', coursesData.data);
+
+            if (total_providers === 1) {
+                $selectPickerElement.find('input[type="checkbox"]').prop('checked', true).attr('disabled', true);
+
+             }
         }
-
-        // Validate multiselect and providers
-        function validateMultiselect() {
-            const selectedOptions = $('#multiselect option').length;
-            const selectPickers = $('#providers option:selected').length;
-            console.log("Selected Options: ", selectedOptions, " Select Pickers: ", selectPickers);
-            if (selectedOptions === 0 || selectPickers === 0) {
-                $('#btnSendReportsp').prop('disabled', true);
-                $('.error-message').show();
-                $('#multiselect_to').addClass('error');
-            } else {
-                $('#btnSendReportsp').prop('disabled', false);
-                $('.error-message').hide();
-                $('#multiselect_to').removeClass('error');
-            }
-        }
-
-        // Validate on page load
-        validateMultiselect();
-
-        // Validate on selection change for multiselect
-        $('#multiselect_rightAll, #multiselect_rightSelected, #multiselect_leftSelected, #multiselect_leftAll').click(function() {
-            setTimeout(validateMultiselect, 100);
-        });
-
-        // Validate on selection change for selectpicker
-        $('#providers').on('changed.bs.select', function () {
-            validateMultiselect();
-        });
-
-        // Remove default email from multiselect
-        const defaultEmail = "{{$instructor_email}}";
-        $('#multiselect_to option').each(function() {
-            let $option = $(this);
-            let email = $option.val();
-            if (email === defaultEmail) {
-                $('#multiselect').append($option.clone());
-                $option.remove();
-                validateMultiselect();
-            }
-        });
 
         // Form submission
         $('#kycs_generate_form').on('submit', function(event) {
             event.preventDefault();
 
-            var selectedOptions = [];
-            $('#multiselect option').each(function() {
-                var email = $(this).val();
-                var firstname = $(this).data('firstname');
-                var lastname = $(this).data('lastname');
-                selectedOptions.push({ email: email, firstname: firstname, lastname: lastname });
-            });
+            // Disable the submit button
+            $('#btn-send-email').prop('disabled', true);
 
-            var formIdValue = $('#kycs_generate_form input[name="form_id"]').val();
+            var requesterData = $('#kycs_generate_form input[name="email_to"]').val();
             var requesterId = $('#kycs_generate_form input[name="requester_id"]').val();
             var siteIdValue = $('#kycs_generate_form input[name="site_id"]').val();
-            var semesterValue = $('#kycs_generate_form select[name="semester"]').val();
             var bo_id = $('#kycs_generate_form input[name="doc_id"]').val();
             var fullname = $('#kycs_generate_form input[name="requester_fullname"]').val();
-            var selectedProviders = $('.btn.dropdown-toggle').attr('title');
+            var year = $('#kycs_generate_form input[name="term"]').val();
+
+            var requesterArray = JSON.parse(requesterData);
+
+            var selectedProviders = [];
+            $('input[name="providers[]"]:checked').each(function() {
+                selectedProviders.push($(this).val());
+            });
 
             var selectedData = {
-                'to': selectedOptions,
-                'form_id': formIdValue,
+                'to': requesterArray,
                 'requester_id': requesterId,
                 'site_id': siteIdValue,
-                'semester': semesterValue,
                 'bo_id': bo_id,
                 'requester_fullname': fullname,
-                'report_type': 'KYCS Report',
+                'report_type': 'Know your Course and Students',
+                'year' : year,
                 'providers': selectedProviders
             };
 
@@ -138,17 +82,23 @@
                 success: function(response) {
                     var success = response.success;
                     var data = response.data;
-                    document.getElementById('response').innerHTML = '<p>Data: ' + data + '</p>';
-                    $('#kycsReportsModal').modal('hide');
-                    window.location.reload();
+
+                    // Set a timeout to refresh the page after 3 seconds
+                    setTimeout(function() {
+                        console.log('refreshing');
+                        location.reload();
+                    }, 5000);
+
                 },
                 error: function(xhr, status, error) {
-                    console.log("xhr: ", xhr);
-                    console.log("Status: ", status);
-                    console.log("Error: ", error);
-                    document.getElementById('response').innerHTML = '<p>An error occurred: ' + error + '</p>';
+                    var errorAlert = '<div class="alert alert-danger alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                        '<span aria-hidden="true">&times;</span></button>' +
+                        'An error occurred: ' + error +
+                        '</div>';
                 }
             });
+
         });
 
         // Accordion handling
@@ -172,6 +122,40 @@
                 td.textContent = 'Error parsing data';
             }
         });
+
+        // disable submit bn if empty
+        function checkConditions() {
+            const anyCheckboxChecked = $('#providers input[type="checkbox"]:checked').length > 0;
+
+            if (anyCheckboxChecked) {
+                $('#btn-send-email').prop('disabled', false);
+            } else {
+                $('#btn-send-email').prop('disabled', true);
+            }
+        }
+
+        // refresh if there are running jobs, every 30 seconds
+        let running_jobs = {{ $running_reports_data}};
+        if (running_jobs.length > 0) {
+            setInterval(function() {
+                console.log('refreshing')
+                location.reload();
+            }, 30000);
+        }
+
+        // Refresh the page when the button is pressed
+        $('#refreshTableBtn').on('click', function() {
+            location.reload();
+        });
+        // Check conditions on document ready
+        checkConditions();
+
+        // Check conditions when checkboxes are clicked
+        $('#providers input[type="checkbox"]').on('change', checkConditions);
+
+        // Check conditions when email tags are added/removed
+        const emailTagsObserver = new MutationObserver(checkConditions);
+
     });
 
 </script>

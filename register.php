@@ -1,10 +1,10 @@
 <?php
 
 $REGISTER_LTI2 = array(
-"name" => "on-demand KYCS report",
+"name" => "Request course analytics report",
 "FontAwesome" => "fa-chart-bar",
-"short_name" => "on-demand KYCS report",
-"description" => "An on-demand tool that generates and sends KYCS report",
+"short_name" => "Course Reports",
+"description" => "An on-demand tool that generates course reports",
 "messages" => array("launch")
 );
 

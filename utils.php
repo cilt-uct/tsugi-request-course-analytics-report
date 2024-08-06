@@ -43,10 +43,8 @@ function trigger_kycs_report($remoteServer, $username, $password, $file){
     $port = 22;
 
     $remoteCsvDir = '/usr/local/src/bo-reports/ondemandcsv/';
-    // $remoteScriptPath = '/usr/local/src/bo-reports/ondemand.sh';
-    $remoteFile = $remoteCsvDir . basename($file);
-   // $remote_file = basename($file);
 
+    $remoteFile = $remoteCsvDir . basename($file);
 
     // Establish SSH connection
     $connection = ssh2_connect($remoteServer, $port);
@@ -61,13 +59,10 @@ function trigger_kycs_report($remoteServer, $username, $password, $file){
 
     $remoteCsvPath = $remoteCsvDir . basename($file);
 
-    // snd file over
+    // send file over
     if (!ssh2_scp_send($connection, $file, $remoteCsvPath)) {
         die('File transfer failed');
     }
-
-    // $command = $remoteScriptPath . ' ' . escapeshellarg($remoteCsvPath) . ' 2>&1';
-    // $command = $remoteScriptPath . ' ondemand_task ' . escapeshellarg($remoteCsvPath);
 
     $escapedCsvPath = escapeshellarg($remoteFile);
     $command = "$escapedCsvPath";
@@ -91,7 +86,7 @@ function createCSV($filename, $data) {
     $file = fopen($filename, 'w');
 
     // Write headers
-    fputcsv($file, ['Course Code', 'Email', 'First Name', 'Last Name', 'Year', 'bo_id'], ';');
+    fputcsv($file, ['Course Code', 'Email', 'First Name', 'Last Name', 'Year', 'bo_id', 'Site Title', 'Site Id'], ';');
 
     // Write data
     foreach ($data as $row) {

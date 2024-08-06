@@ -1,5 +1,15 @@
-    /* Basic styling for the autocomplete container */
-    .autocomplete-container {
+body {
+    color: #202122;
+    display: block;
+    font-family: Lato, Lucida Sans Unicode, Lucida Grande, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: .01rem;
+    line-height: 1.4rem;
+    padding-top: 0 !important;
+}
+/* Basic styling for the autocomplete container */
+ .autocomplete-container {
         position: relative;
         display: flex;
         flex-wrap: wrap;
@@ -48,7 +58,6 @@
     margin: 3px;
 
     display: flex;
-
     align-items: center;
 
 }
@@ -232,4 +241,103 @@ form#kycs_settings_form input#classlist-input, input#username-input, input#passw
 .bootstrap-select button.btn.dropdown-toggle.btn-default {
     line-height: 1rem;
     font-weight: 100;
+}
+
+h1.course-reports-heading {
+    float: left;
+    margin-top: 0;
+    font-weight: 400;
+}
+.title.col-md-6 {
+    padding-left: 0;
+}
+.dass-logo {
+    width: 10rem;
+}
+
+.email-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 1rem 0;
+}
+.selectproviders {
+    margin: 1rem 0;
+}
+.form-control {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.email-tag {
+    display: flex;
+    align-items: center;
+    background-color: #006fbf;
+    border-radius: 3px;
+    padding: 4px 8px;
+    margin: 2px;
+    font-size: 12px;
+    color: #fff;
+}
+
+.remove-email {
+    margin-left: 6px;
+    cursor: pointer;
+    color: #ffffff;
+}
+.hidden {
+    display: none;
+}
+input[type=checkbox], input[type=radio] {
+    margin: 0.2rem;
+}
+
+.reports-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: none !important;
+    color: #000 !important;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.reports-button .icon {
+    margin-right: 5px;
+    transition: transform 0.3s;
+}
+
+.reports-button.collapsed .icon {
+    transform: rotate(0deg);
+}
+
+.reports-button .icon {
+    transform: rotate(0deg);
+}
+
+input#email-input[disabled] {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.no-providers {
+    margin: 1.2rem 0;
+}
+.courses-form-check {
+    margin-top: 1rem;
+}
+.form-check a, .no-providers a {
+    color: #006fbf !important;
+}
+
+.form-check a:hover,
+.no-providers a:hover {
+    text-decoration: underline;
 }

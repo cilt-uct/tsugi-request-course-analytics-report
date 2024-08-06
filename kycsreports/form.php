@@ -30,12 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $input = json_decode($rawInput, true);
 
-    $providers = explode(',', $input['providers']);
-    $providers = array_map('trim', $providers); // Remove any extra spaces
-
     $kycsreportsDAO = new KYCSReportsDAO($PDOX, $CFG->dbprefix);
 
-    $result['success'] = $kycsreportsDAO->runkycsreport($input['requester_id'], $input['site_id'], $providers, $input['to'], $input['requester_fullname'], $input['report_type'])? 1 : 0;;
+    $result['success'] = $kycsreportsDAO->runkycsreport(
+        $input['requester_id'],
+        $input['site_id'],
+        $input['year'],
+        $input['providers'],
+        $input['to'],
+        $input['requester_fullname'],
+        $input['report_type'])? 1 : 0;;
+
     $result['data'] = $result['success'] === 1 ? 'Inserted' : 'Error Inserting';
 
     // csv data, loop through everyon here
@@ -47,35 +52,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($input['to'] as $recipient) {
 
             // used for testing with course with providers
-            // $site_id = 42271;
-            // $courseDetails = fetchWithBasicAuth($tool['coursesurl'] .'/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
+            $site_id = $input['site_id'];
+            $courseDetails = fetchWithBasicAuth($tool['coursesurl'] .'/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
 
-            $courseDetails = fetchWithBasicAuth($tool['coursedetailsurl'] .'/'.$input['site_id'], $tool['middleware_username'], $tool['middleware_password']);
+            //$courseDetails = fetchWithBasicAuth($tool['coursedetailsurl'] .'/'.$input['site_id'], $tool['middleware_username'], $tool['middleware_password']);
 
             $courseCode = explode('_', $courseDetails['data']['Code'])[0];
             $year = $courseDetails['data']['Semester']['Code'];
 
-            foreach ($providers as $provider) {
-                $dataForCSV[] = [
-                    'Course Code' => $provider,
-                    // 'Email' => 'loyiso.ngqwebo@uct.ac.za',
-                    'Email' => $recipient['email'],
-                    'First Name' => $recipient['firstname'],
-                    'Last Name' => $recipient['lastname'],
-                    'Year' => $year,
-                    'bo_id' => $input['bo_id']
-                ];
+            $providersData = [];
+
+            // Group users by provider
+                foreach ($input['providers'] as $provider) {
+                    $providersData[$provider][] = [
+                        'Course Code' => $provider,
+                        'Email' => $recipient['email'],
+                        'First Name' => $recipient['firstname'],
+                        'Last Name' => $recipient['lastname'],
+                        'Year' => $year,
+                        'bo_id' => $input['bo_id'],
+                        'Site Title' => $LAUNCH->ltiRawParameter('context_title'),
+                        'Site Id' => $site_id,
+                    ];
+                }
+            }
+
+        $filename = '';
+
+        // Save each provider's data to a CSV file
+        foreach ($providersData as $provider => $dataForCSV) {
+            $filename = "../csv/{$provider}_" . date('Y-m-d_H-i-s') . ".csv";
+            createCSV($filename, $dataForCSV);
+
+            if (file_exists($filename)) {
+
+                trigger_kycs_report($tool['bo_server_host'], $tool['server_username'], $tool['server_password'], $filename);
             }
         }
 
-        $filename = "../csv/{$courseCode}_" . date('Y-m-d_H-i-s') . ".csv";
-
-        createCSV($filename, $dataForCSV);
-
-        if (file_exists($filename)) {
-
-            trigger_kycs_report($tool['bo_server_host'], $tool['server_username'], $tool['server_password'], $filename);
-        }
     }
 
 }

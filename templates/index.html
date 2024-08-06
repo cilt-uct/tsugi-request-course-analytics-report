@@ -1,105 +1,74 @@
-<div class="flex-container">
-    {% foreach($reports as $rep): %}
-        {% if($rep["active"]) { %}
-            {% if ($rep['target']) { %}
-            <a href="#" data-toggle="modal" data-target="#{% print($rep['target']) %}">
-                <img src="{% print($rep['img']) %}" class='report-image'>
-                <h5>"{% print($rep['title']) %}"</h5>
-            </a>
-            {% } else { %}
-            <a href="{% print($rep['url']) %}">
-                <img src="{% print($rep['img']) %}" class='report-image'>
-                <h5>"{% print($rep['title']) %}"</h5>
-            </a>
-    {% } %}
-    {% } %}
-    {% endforeach; %}
-</div>
+<div class="container">
+{% if ($course_providers) { %}
+{% if ($running_reports) { %}
+<p>One or more reports are being generated. This may take from several minutes to several hours depending on server load.</p>
+{% } else { %}
+<p>The following DASS course report(s) are available:</p>
+{% } %}
 
-<!-- data reports -->
-<button class="btn btn-primary btn-chevron collapsed" type="button" data-toggle="collapse" data-target="#previousReports" aria-expanded="false" aria-controls="previousReports">
-    View reports data
-</button>
-</p>
-<div class="collapse" id="previousReports">
-    <div class="card card-body">
-        <table class="table table-bordered table-rounded">
-            <thead class="bg-info">
-                <tr>
-                    <td style="width: 10vw;"> Requestor</td>
-                    <td style="width: 10vw;">Recepients</td>
-                    <td style="width: 10vw;">Status</td>
-                    <td style="width: 15vw;">Report Type</td>
-                    <td style="width: 10vw;">Date Generated</td>
-                    <td style="width: 10vw;">Date Sent</td>
-                <tr>
-            </thead>
-            {% foreach($past_reports as $rep): %}
-            <tr>
-                <td>{% print($rep['requester_name']) %}</td>
-                <td class="emails">{% print($rep['data']) %}</td>
-                <td>{% print($rep['state']) %}</td>
-                <td>{% print($rep['report_type']) %}</td>
-                <td>{% print($rep['created_at']) %}</td>
-                <td>{% print($rep['modified_at']) %}</td>
-            </tr>
-            {% endforeach; %}
-        </table>
+{% foreach($reports as $rep): %}
+{% if (!$running_reports) { %}
+<form id="kycs_generate_form" method="POST">
+    <div class="form-check">
+        <label class="form-check-label"></label>
+            <input type="radio" class="form-check-input" id="{% print($rep['target']) %}" name="{% print($rep['target']) %}" value="{% print($rep['target']) %}"
+            {% if ($rep["active"] != 'TRUE') { %} disabled {% } %}><a href="{% print($rep['link']) %}" target="_blank">{% print($rep['title']) %}</a>
+        </label>
     </div>
-</div>
-<!-- Kycs modal -->
-<!-- modal -->
-<div class="modal fade" id="kycsReportsModal" tabindex="-1" aria-labelledby="kycsReportsModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form id="kycs_generate_form" method="POST">
-                <div class="modal-header">
-                    <div>
-                        <h5 class="modal-title" id="kycsReportsModalLabel">KYCS reports</h5>
-                    </div>
-                    <div>
-                        <span class="font-weight-bold">Course Code:</span> {{$siteid}}
-                    </div>
-                    <div>
-                        <select class="selectpicker" id="providers" data-live-search="true" multiple>
-                          </select>
-                    </div>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="email_reports">
-                    <div class="row">
-                        <div class="col-sm-5">
-                            <label>Email to:</label>
-                            <select name="to[]" id="multiselect" class="form-control" size="8" multiple="multiple">
-                            </select>
-                        </div>
+    {% } %}
+{% endforeach; %}
+{% } else { %}
+<div class="no-providers">
+    There are no course codes associated directly with this
+        Amathuba site. To request a Know your Course and Students report for a specific course,
+        please access this via the Amathuba site for the course, or <a href="https://dass.uct.ac.za/submit-data-query" target="_blank">submit a data query</a>.</p></div>
 
-                        <div class="col-sm-2">
-                            <button type="button" id="multiselect_rightAll" class="btn btn-block"><i class="glyphicon glyphicon-forward"></i></button>
-                            <button type="button" id="multiselect_rightSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
-                            <button type="button" id="multiselect_leftSelected" class="btn btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
-                            <button type="button" id="multiselect_leftAll" class="btn btn-block"><i class="glyphicon glyphicon-backward"></i></button>
-                        </div>
+{% } %}
+<!-- kycs form stuffs -->
 
-                        <div class="col-sm-5">
-                            <label>Available:</label>
-                            <select name="from[]" id="multiselect_to" class="form-control" size="8" multiple="multiple"></select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <input type="hidden" name="form_id" id="form_id" value="kycs_generate_form">
-                    <input type="hidden" name="site_id" id="site_id" value="{{$siteid}}">
-                    <input type="hidden" name="requester_id" id="requester_id" value="{{$requesterid}}">
-                    <input type="hidden" name="requester_fullname" id="requester_fullname" value="{{$requester_fullname}}">
-                    <input type="hidden" name="doc_id" id="doc_id" value="{{$bo_id}}">
-                    <button type="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success" id="btnSendReportsp" name="btnSendReports">Send Reports</button>
-                </div>
-            </form>
-            <div id="response"></div>
+<div id="alert-container"></div>
+<div  class="{% if (!$running_reports) { %}hidden {% } %}" id="kycsReports">
+
+    {% if ($running_reports) { %}
+    <table class="table table-bordered table-rounded">
+        <tr>
+            <td class="hidden">Course</td>
+            <td>Course</td>
+            <td>Report</td>
+            <td>Recipient</td>
+            <td>Status</td>
+            <td>Requested</td>
+        </tr>
+    {% foreach($running_reports as $run): %}
+    <tr>
+        <td class="hidden">{% print($run['id'])%}</td>
+        <td>{% print($run['provider_id'])%} {% print($run['term'])%}</td>
+        <td>{% print($run['report_type'])%} </td>
+        <td class="emails">{% print($run['data']) %}</td>
+        <td>{% print($run['state']) %}</td>
+        <td>{% print($run['created_at']) %}</td>
+    </tr>
+        {% endforeach; %}
+    </table>
+    <button id="refreshTableBtn" class="btn btn-primary">Refresh Table</button>
+    {% } else { %}
+        <div class="courses-form-check">
+            <p>for the following course(s)
+            <div id="providers"> </div>
+            <div id="selected-emails" class="mt-3"></div>
         </div>
-    </div>
+        <input type="hidden" name="email_to" id="email_to" value='[{"email": "{{$requester_email}}", "firstname": "{{$requester_firstname}}", "lastname": "{{$requester_lastname}}"}]'>
+        <input type="hidden" name="site_id" id="site_id" value="{{$siteid}}">
+        <input type="hidden" name="term" id="term" value="{{$year}}">
+        <input type="hidden" name="requester_id" id="requester_id" value="{{$requesterid}}">
+        <input type="hidden" name="requester_fullname" id="requester_fullname" value="{{$requester_firstname}} {{$requester_lastname}}">
+        <input type="hidden" name="doc_id" id="doc_id" value="{{$bo_id}}">
+        <div id="email-container" class="email-container">
+            The report(s) will be emailed to: {{$requester_email}}
+        </div>
+        <button type="submit" class="btn btn-success mt-5" id="btn-send-email" name="btn-send-email">Email Report</button>
+    {% } %}
+</form>
+
+</div>
 </div>

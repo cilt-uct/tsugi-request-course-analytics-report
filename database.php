@@ -15,11 +15,13 @@ $DATABASE_INSTALL = array(
         "CREATE TABLE IF NOT EXISTS `{$CFG->dbprefix}reports_kycs_jobs` (
          `id` INTEGER NOT NULL AUTO_INCREMENT,
          `course_id` INTEGER NOT NULL,
+         `term` VARCHAR(30) NOT NULL,
          `provider_id` VARCHAR(30) NOT NULL,
          `requester_id` INTEGER NOT NULL,
          `requester_name` VARCHAR(255) NOT NULL,
          `data` TEXT NOT NULL,
          `report_type` VARCHAR(255) NOT NULL,
+         `schedule_id` VARCHAR(30) NULL,
          `state` VARCHAR(255) NOT NULL,
          `created_at`   DATETIME NOT NULL,
          `modified_at`   DATETIME NULL,

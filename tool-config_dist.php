@@ -35,32 +35,19 @@ $tool['server_password'] = 'server_password';
 $reports = [
     [
         'id' => 'BO001', # KYCS bo report template
-        'title' =>  'on-demand KYCS reportss',
+        'title' =>  'Know your Course and Students (KYCS)',
         'description' => 'this is a short blurb for KYCS',
-        'img' =>  '/static/reports/uct-dass-logo.png',
+        'link' => 'https://dass.uct.ac.za/know-your-course-students-kycs-reports',
+        'img' =>  'static/reports/uct-dass-logo.png',
         'bo_id' =>  'cuid_AfiAp2gwe2VOrc1APJ6uD9M',
         'bo_email' =>  'BO001_body.eml',
-        'target' => 'kycsReportsModal',
+        'target' => 'kycsReports',
         'active' =>  true,
         'time' => [
             ['id' => 'Semester One', 'value' => '1st Semester'],
             ['id' => 'Semester Two', 'value' => '2nd Semester'],
             ['id' => 'Full Year', 'value' => 'Full Year'],
         ],
-        'roles' => ['Lecturer', 'Lecturer Tutor', 'Owner', 'Tutor']
+        'kycsroles' => ['Lecturer', 'Lecturer Tutor', 'Owner', 'Tutor']
     ],
-    [
-        'id' => 'BO001B', # KYCS bo report template
-        'title' =>  'on-demand KYCS report New',
-        'img' =>  '/static/reports/kycs.png',
-        'bo_id' =>  'cuid_AfiAp2gwe2VOrc1APJ6uD9M',
-        'bo_email' =>  'BO001_body.eml',
-        'active' =>  false,
-        'time' => [
-            ['id' => 'Semester One', 'value' => '1st Semester'],
-            ['id' => 'Semester Two', 'value' => '2nd Semester'],
-            ['id' => 'Full Year', 'value' => 'Full Year'],
-        ],
-        'roles' => ['Lecturer', 'Owner']
-    ]
-    ];
+];
