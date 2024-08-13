@@ -53,7 +53,8 @@
             var requesterId = $('#kycs_generate_form input[name="requester_id"]').val();
             var siteIdValue = $('#kycs_generate_form input[name="site_id"]').val();
             var bo_id = $('#kycs_generate_form input[name="doc_id"]').val();
-            var fullname = $('#kycs_generate_form input[name="requester_fullname"]').val();
+            var firstname = $('#kycs_generate_form input[name="requester_fistname"]').val();
+            var lastname = $('#kycs_generate_form input[name="requester_lastname"]').val();
             var year = $('#kycs_generate_form input[name="term"]').val();
 
             var requesterArray = JSON.parse(requesterData);
@@ -68,7 +69,8 @@
                 'requester_id': requesterId,
                 'site_id': siteIdValue,
                 'bo_id': bo_id,
-                'requester_fullname': fullname,
+                'firstname': firstname,
+                'lastname': lastname,
                 'report_type': 'Know your Course and Students',
                 'year' : year,
                 'providers': selectedProviders
@@ -85,7 +87,6 @@
 
                     // Set a timeout to refresh the page after 3 seconds
                     setTimeout(function() {
-                        console.log('refreshing');
                         location.reload();
                     }, 5000);
 
@@ -136,6 +137,7 @@
 
         // refresh if there are running jobs, every 30 seconds
         let running_jobs = {{ $running_reports_data}};
+        console.log(running_jobs)
         if (running_jobs.length > 0) {
             setInterval(function() {
                 console.log('refreshing')

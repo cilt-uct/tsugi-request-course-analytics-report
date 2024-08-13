@@ -61,7 +61,8 @@
         <input type="hidden" name="site_id" id="site_id" value="{{$siteid}}">
         <input type="hidden" name="term" id="term" value="{{$year}}">
         <input type="hidden" name="requester_id" id="requester_id" value="{{$requesterid}}">
-        <input type="hidden" name="requester_fullname" id="requester_fullname" value="{{$requester_firstname}} {{$requester_lastname}}">
+        <input type="hidden" name="requester_fistname" id="requester_fistname" value="{{$requester_firstname}}">
+        <input type="hidden" name="requester_lastname" id="requester_lastname" value="{{$requester_lastname}}">
         <input type="hidden" name="doc_id" id="doc_id" value="{{$bo_id}}">
         <div id="email-container" class="email-container">
             The report(s) will be emailed to: {{$requester_email}}

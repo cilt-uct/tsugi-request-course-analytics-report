@@ -1,0 +1,82 @@
+<div class="container">
+    {% foreach($reports as $rep): %}
+    <form id="kycs_generate_form" method="POST">
+        <div class="form-check">
+            <label class="form-check-label"></label>
+                <input type="radio" class="form-check-input" id="{% print($rep['target']) %}" name="{% print($rep['target']) %}" value="{% print($rep['target']) %}"
+                {% if ($rep["active"] != 'TRUE') { %} disabled {% } %}>{% print($rep['title']) %}
+            </label>
+        </div>
+    {% endforeach; %}
+
+    <!-- kycs form stuffs -->
+
+    <!-- <div id="alert-container"></div> -->
+    <div class="container mt-5 hidden" id="kycsReports">
+
+        {% if ($running_reports) { %}
+        <p><strong>The following reports/s are running and will be emailed to the recepient/s:</strong></p>
+        <table class="table table-bordered table-rounded">
+            <tr>
+                <td class="hidden">Course</td>
+                <td>Provider</td>
+                <td>Recipients</td>
+            </tr>
+        {% foreach($running_reports as $run): %}
+        <tr>
+            <td class="hidden">{% print($run['id'])%}</td>
+            <td>{% print($run['provider_id'])%}</td>
+            <td class="emails">{% print($run['data']) %}</td>
+        </tr>
+            {% endforeach; %}
+        </table>
+        {% } else { %}
+            <div class="form-check">
+                <div id="email-container" class="email-container">
+                    <input id="email-input" class="form-control" type="text" placeholder="Select Recepients">
+                </div>
+                <div id="providers"> </div>
+                <div id="selected-emails" class="mt-3"></div>
+            </div>
+            <input type="hidden" name="site_id" id="site_id" value="{{$siteid}}">
+            <input type="hidden" name="requester_id" id="requester_id" value="{{$requesterid}}">
+            <input type="hidden" name="requester_fullname" id="requester_fullname" value="{{$requester_firstname}} {{$requester_lastname}}">
+            <input type="hidden" name="doc_id" id="doc_id" value="{{$bo_id}}">
+            <button type="submit" class="btn btn-success mt-5" id="btn-send-email" name="btn-send-email">Email Report</button>
+        {% } %}
+    </form>
+    <!-- <div class="row">
+        {% if ($past_reports) { %}
+        <button class="reports-button btn-primary" type="button" data-toggle="collapse" data-target="#previousReports" aria-expanded="false" aria-controls="previousReports">
+        <i class="glyphicon glyphicon-chevron-down icon"></i>
+        View previous reports data
+      </button>
+      {% } %}
+    </p>
+
+        <div class="collapse" id="previousReports">
+            <div class="card card-body">
+                <table class="table table-bordered table-rounded">
+                    <thead class="bg-info">
+                        <tr>
+                            <td style="width: 20vw;"> Requestor</td>
+                            <td style="width: 20vw;">Recepients</td>
+                            <td style="width: 20vw;">Status</td>
+                            <td style="width: 20vw;">Date Generated</td>
+                        <tr>
+                    </thead>
+                    {% foreach($past_reports as $rep): %}
+                    <tr>
+                        <td>{{$requester_firstname}} {{$requester_lastname}}</td>
+                        <td class="emails">{% print($rep['data']) %}</td>
+                        <td>{% print($rep['state']) %}</td>
+                        <td>{% print($rep['created_at']) %}</td>
+                    </tr>
+                    {% endforeach; %}
+                </table>
+            </div>
+        </div>
+    </div> -->
+
+    </div>
+    </div>

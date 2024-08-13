@@ -21,7 +21,11 @@ class KYCSReportsDAO {
     }
 
     // store run kycs reports
-    public function runkycsreport($requester_id, $course_id, $year, $providers, $data, $fullname, $report_type) {
+    public function runkycsreport($course_id, $title, $term, $providers, $requester_id, $firstname, $lastname, $data, $report_type, $docid) {
+        // keep to data input['to] as array for to handle multiple emails and names
+
+        // print_r('Course ID: ' .$course_id. 'Term: ' .$term. 'proviers: ' .$providers. 'RequesterID: '.$requester_id. 'Requester: ' .$fullname. 'Data: ' .$data. 'Report type: ' .$report_type. 'Doc ID: ' .$docid);
+        // die();
         if (is_array($data)) {
             $data = json_encode($data);
         }
@@ -36,16 +40,20 @@ class KYCSReportsDAO {
                 $provider_id = trim($provider_id);
 
                 $this->PDOX->queryDie("INSERT INTO {$this->p}reports_kycs_jobs
-                    (requester_id, requester_name, course_id, term, provider_id, data, report_type, schedule_id, state, created_at)
-                    VALUES (:requester_id, :fullname, :course_id, :term, :provid, :data, :type, '', 'Submitting', NOW())",
+                    (course_id, title, term, provider_id, requester_id, firstname, lastname, data, report_type, document_id, schedule_id, state, created_at)
+                    VALUES (:course_id, :title, :term, :prov_id, :requester_id, :firstname, :lastname, :data, :type, :doc_id, '', :state, NOW())",
                     array(
-                        ':requester_id' => $requester_id,
-                        ':fullname' => $fullname,
                         ':course_id' => $course_id,
-                        ':term' => $year,
-                        ':provid' => $provider_id,
+                        ':title' => $title,
+                        ':term' => $term,
+                        ':prov_id' => $provider_id,
+                        ':requester_id' => $requester_id,
+                        ':firstname' => $firstname,
+                        ':lastname' => $lastname,
                         ':data' => $data,
-                        ':type' => $report_type
+                        ':type' => $report_type,
+                        ':doc_id' => $docid,
+                        'state' => 'Submitting'
                     ));
             }
             return TRUE;
