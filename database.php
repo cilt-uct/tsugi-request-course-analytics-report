@@ -2,7 +2,7 @@
 
 // The SQL to uninstall this tool
 $DATABASE_UNINSTALL = array(
-"drop table if exists {$CFG->dbprefix}reports_kycs_jobs"
+"drop table if exists {$CFG->dbprefix}bo_reports_jobs"
 );
 
 // The SQL to create the tables if they don't exist
@@ -11,8 +11,8 @@ $DATABASE_UNINSTALL = array(
 
 $DATABASE_INSTALL = array(
     array(
-        "{$CFG->dbprefix}reports_kycs_jobs",
-        "CREATE TABLE IF NOT EXISTS `{$CFG->dbprefix}reports_kycs_jobs` (
+        "{$CFG->dbprefix}bo_reports_jobs",
+        "CREATE TABLE IF NOT EXISTS `{$CFG->dbprefix}bo_reports_jobs` (
          `id` INTEGER NOT NULL AUTO_INCREMENT,
          `course_id` INTEGER NOT NULL,
          `title` VARCHAR(255) NOT NULL,

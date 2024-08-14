@@ -4,3 +4,4 @@
 cache/*.php
 !cache/*.keep
 .tool-config.php
+/csv/

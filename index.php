@@ -33,13 +33,13 @@ $courseproviders = fetchWithBasicAuth($tool['coursesurl'] .'providers/'.$site_id
 $courseCode = explode('_', $courseDetails['data']['Code'])[0];
 $year = $courseDetails['data']['Semester']['Code'];
 // get results
-$reports_data = $PDOX->allRowsDie("SELECT * FROM reports_kycs_jobs WHERE course_id = {$site_id}");
+$reports_data = $PDOX->allRowsDie("SELECT * FROM bo_reports_jobs WHERE course_id = {$site_id}");
 $emails = array_column($reports_data, 'data');
 // runnung report
-$running_reports = $PDOX->allRowsDie("SELECT * FROM reports_kycs_jobs WHERE course_id = {$site_id} and state != 'Completed' ");
+$running_reports = $PDOX->allRowsDie("SELECT * FROM bo_reports_jobs WHERE course_id = {$site_id} and state != 'Completed' ");
 
 // get results
-$reports_data = $PDOX->allRowsDie("SELECT * FROM reports_kycs_jobs WHERE course_id = {$site_id}");
+$reports_data = $PDOX->allRowsDie("SELECT * FROM bo_reports_jobs WHERE course_id = {$site_id}");
 
 if (str_contains($lms_info, 'sakai')) {
     // display any admin params needed here
@@ -84,7 +84,7 @@ $context = [
     'allrecepients' => $recipients_data,
     'bo_id' => $docid,
     'year' => $year,
-    'kycsformurl' => addSession(str_replace("\\","/",$CFG->getCurrentFileUrl('kycsreports/form.php'))),
+    'kycsformurl' => addSession(str_replace("\\","/",$CFG->getCurrentFileUrl('boreports/form.php'))),
     'past_reports' => $reports_data,
     'course_details_url' => $courseDetails,
     'course_code' => $courseCode,
