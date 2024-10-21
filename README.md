@@ -5,7 +5,7 @@ An LTI tool written in Tsugi which can generate on demand course analytics.
 
 UCT reference:
 --------------
-https://jira.cilt.uct.ac.za/browse/LA-84
+https://cilt.atlassian.net/browse/LA-84
 
 Pre-Requisites
 --------------
