@@ -36,6 +36,8 @@ class BOReportsDAO {
             foreach ($providers as $provider_id) {
                 // Trim whitespace around provider IDs
                 $provider_id = trim($provider_id);
+                $firstname = trim(json_encode($firstname), '"');
+                $lastname = trim(json_encode($lastname), '"');
 
                 $this->PDOX->queryDie("INSERT INTO {$this->p}bo_reports_jobs
                     (course_id, title, term, provider_id, requester_id, firstname, lastname, data, report_type, document_id, schedule_id, state, created_at)
