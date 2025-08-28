@@ -36,8 +36,6 @@ class BOReportsDAO {
             foreach ($providers as $provider_id) {
                 // Trim whitespace around provider IDs
                 $provider_id = trim($provider_id);
-                $firstname = trim(json_encode($firstname), '"');
-                $lastname = trim(json_encode($lastname), '"');
 
                 $this->PDOX->queryDie("INSERT INTO {$this->p}bo_reports_jobs
                     (course_id, title, term, provider_id, requester_id, firstname, lastname, data, report_type, document_id, schedule_id, state, created_at)
@@ -59,6 +57,19 @@ class BOReportsDAO {
             return TRUE;
         } catch (PDOException $e) {
             return FALSE;
+        }
+    }
+
+    // run failed report again - just use ID and update status is database to processing or submitting
+    public function retryfailedboreport($id) {
+        try {
+            $this->PDOX->queryDie("UPDATE {$this->p}bo_reports_jobs
+                SET state = 'Submitting', modified_at = NOW()
+                WHERE id = :id",
+                array(':id' => $id));
+            return TRUE;
+        } catch (PDOException $e) {
+            return FALSE; // Handle error appropriately
         }
     }
 

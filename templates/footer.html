@@ -17,23 +17,36 @@
 
         // get providers, on radio click display providers
         let coursesData = {{ $course_providers_data }};
+        console.log(coursesData)
 
         let $selectPickerElement = $('#providers');
 
         total_providers = 0;
         if (Array.isArray(coursesData.data)) {
+            const seen = new Set();  // To track unique items
+            let total_providers = 0;
+
             coursesData.data.forEach(item => {
-                // Create the checkbox input element
-                let $checkbox = $('<input type="checkbox" name="providers[]">').val(item.provider).attr('data-created-at', item.created_at).prop('checked', true);
+                const uniqueKey = `${item.provider}-${item.term}`; // Create a unique key
 
-                // Create a label element associated with the checkbox
-                let $label = $('<div class="form-check"><label class="form-check-label"></label></div>')
-                    .text(item.provider + ' ' + item.term)
-                    .prepend($checkbox); // Place the checkbox before the label text
+                if (!seen.has(uniqueKey)) { // Check if this combination has been added already
+                    seen.add(uniqueKey); // Mark this combination as seen
 
-                // Append the label (which includes the checkbox) to the select picker element
-                $selectPickerElement.append($label);
-                total_providers++;
+                    // Create the checkbox input element
+                    let $checkbox = $('<input type="checkbox" name="providers[]">')
+                        .val(item.provider)
+                        .attr('data-created-at', item.created_at)
+                        .prop('checked', true);
+
+                    // Create a label element associated with the checkbox
+                    let $label = $('<div class="form-check"><label class="form-check-label"></label></div>')
+                        .text(item.provider + ' ' + item.term)
+                        .prepend($checkbox); // Place the checkbox before the label text
+
+                    // Append the label (which includes the checkbox) to the select picker element
+                    $selectPickerElement.append($label);
+                    total_providers++;
+                }
             });
 
             if (total_providers === 1) {
@@ -114,10 +127,10 @@
             var jsonString = td.textContent.trim();
             try {
                 var data = JSON.parse(jsonString);
-                var formattedResults = data.map(function(item) {
-                    return item.firstname + ' ' + item.lastname + ' (' + item.email + ')';
+                var emailResults = data.map(function(item) {
+                    return item.email;
                 });
-                td.textContent = formattedResults.join(', ');
+                td.textContent = emailResults.join(', ');
             } catch (e) {
                 console.error('Error processing JSON:', e);
                 td.textContent = 'Error parsing data';
@@ -157,6 +170,39 @@
 
         // Check conditions when email tags are added/removed
         const emailTagsObserver = new MutationObserver(checkConditions);
+
+        // Handling retry for failed email
+    $('a#retry_bo_job').on('click', function(event) {
+        event.preventDefault();
+
+        const hiddenValue = $(this).closest('tr').find('td.hidden.id').text().trim();
+        const statusValue = $(this).closest('tr').find('td.status');
+
+        // set this to submitting quickly
+        statusValue.text('Submitting');
+
+        // console.log('Retry ID:', hiddenValue);
+
+        $.ajax({
+            url: '{{$kycsformurl}}',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ action: 'retry', id: hiddenValue }),
+            success: function(response) {
+                console.log('Retry response:', response);
+
+                if (response.success) {
+                    // maybe reload the table to show updated status
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    alert('Failed to retry: ' + response.data);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error retrying job:', error);
+            }
+        });
+    });
 
     });
 

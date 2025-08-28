@@ -32,6 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $boreportsDAO = new BOReportsDAO($PDOX, $CFG->dbprefix);
 
+    // Check action
+    if (isset($input['action']) && $input['action'] === 'retry') {
+        $result['success'] = $boreportsDAO->retryfailedboreport($input['id']) ? 1 : 0;
+        $result['data'] = $result['success'] ? 'Retry triggered' : 'Error retrying';
+
+    }
+    else {
+
     $result['success'] = $boreportsDAO->runboreport(
         $input['site_id'],
         $LAUNCH->ltiRawParameter('context_title'),
@@ -46,8 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         )? 1 : 0;
 
     $result['data'] = $result['success'] === 1 ? 'Inserted' : 'Error Inserting';
-
+    }
 }
+
 echo json_encode($result);
 exit;
 
