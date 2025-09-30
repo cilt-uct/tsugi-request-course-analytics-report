@@ -17,7 +17,7 @@
 
         // get providers, on radio click display providers
         let coursesData = {{ $course_providers_data }};
-        console.log(coursesData)
+        // console.log(coursesData)
 
         let $selectPickerElement = $('#providers');
 
@@ -51,8 +51,7 @@
 
             if (total_providers === 1) {
                 $selectPickerElement.find('input[type="checkbox"]').prop('checked', true).attr('disabled', true);
-
-             }
+            }
         }
 
         // Form submission
@@ -102,7 +101,6 @@
                     setTimeout(function() {
                         location.reload();
                     }, 5000);
-
                 },
                 error: function(xhr, status, error) {
                     var errorAlert = '<div class="alert alert-danger alert-dismissible" role="alert">' +
@@ -130,6 +128,7 @@
                 var emailResults = data.map(function(item) {
                     return item.email;
                 });
+
                 td.textContent = emailResults.join(', ');
             } catch (e) {
                 console.error('Error processing JSON:', e);
@@ -150,10 +149,11 @@
 
         // refresh if there are running jobs, every 30 seconds
         let running_jobs = {{ $running_reports_data}};
-        console.log(running_jobs)
+        // console.log(running_jobs)
+
         if (running_jobs.length > 0) {
             setInterval(function() {
-                console.log('refreshing')
+                // console.log('refreshing');
                 location.reload();
             }, 30000);
         }
@@ -162,6 +162,7 @@
         $('#refreshTableBtn').on('click', function() {
             location.reload();
         });
+
         // Check conditions on document ready
         checkConditions();
 
@@ -172,38 +173,37 @@
         const emailTagsObserver = new MutationObserver(checkConditions);
 
         // Handling retry for failed email
-    $('a#retry_bo_job').on('click', function(event) {
-        event.preventDefault();
+        $('a#retry_bo_job').on('click', function(event) {
+            event.preventDefault();
 
-        const hiddenValue = $(this).closest('tr').find('td.hidden.id').text().trim();
-        const statusValue = $(this).closest('tr').find('td.status');
+            const hiddenValue = $(this).closest('tr').find('td.hidden.id').text().trim();
+            const statusValue = $(this).closest('tr').find('td.status');
 
-        // set this to submitting quickly
-        statusValue.text('Submitting');
+            // set this to submitting quickly
+            statusValue.text('Submitting');
 
-        // console.log('Retry ID:', hiddenValue);
+            // console.log('Retry ID:', hiddenValue);
 
-        $.ajax({
-            url: '{{$kycsformurl}}',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ action: 'retry', id: hiddenValue }),
-            success: function(response) {
-                console.log('Retry response:', response);
+            $.ajax({
+                url: '{{$kycsformurl}}',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ action: 'retry', id: hiddenValue }),
+                success: function(response) {
+                    // console.log('Retry response:', response);
 
-                if (response.success) {
-                    // maybe reload the table to show updated status
-                    setTimeout(() => location.reload(), 2000);
-                } else {
-                    alert('Failed to retry: ' + response.data);
+                    if (response.success) {
+                        // maybe reload the table to show updated status
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        alert('Failed to retry: ' + response.data);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error retrying job:', error);
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error retrying job:', error);
-            }
+            });
         });
-    });
 
     });
-
 </script>

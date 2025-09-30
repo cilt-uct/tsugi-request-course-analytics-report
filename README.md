@@ -1,17 +1,15 @@
-Request Course Analytics Report
-=============================================================
+# Request Course Analytics Report
 
-A self service Tsugi tool with form request which generated on deman KYCS reports for course associated with site.
+A self service Tsugi tool with form request which generated on demand KYCS reports for course associated with site.
 
-### UCT reference:
---------------
-https://cilt.atlassian.net/browse/LA-84
+_Reference: **LA-84**_
 
 ### Required Paramaters
-To generate KYCS Amathuba site should have course codes associated with it, if no course_codes are associated, a default message will appear.
-"There are no course codes associated directly with this Amathuba site. To request a Know your Course and Students report for a specific course, please access this via the Amathuba site for the course, or submit a data query."
 
---------------
+To generate KYCS Amathuba site should have course codes associated with it, if no course_codes are associated, a default message will appear.
+
+> There are no course codes associated directly with this Amathuba site. To request a Know your Course and Students report for a specific course, please access this via the Amathuba site for the course, or submit a data query.
+
 | Paramater | Description |
 |-----------|-------------|
 | course_code(s) | Course codes (providers_ids) associated with to Amathuba site |
@@ -25,7 +23,3 @@ Pre-Requisites
 
 * Tsugi
 * BO Reports - https://github.com/cilt-uct/bo-reports/
-
-Sample text files for Course Analytics
-=======================================================
-data.json - kycs convenor sample list

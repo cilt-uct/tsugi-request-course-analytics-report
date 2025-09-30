@@ -9,6 +9,7 @@ use \Tsugi\Core\Roster;
 
 // Retrieve the launch data if present
 $LAUNCH = LTIX::requireData();
+
 $p = $CFG->dbprefix;
 
 $site_id = $LAUNCH->ltiRawParameter('context_id','none');
@@ -17,7 +18,7 @@ $handledRoster = LTIX::populateRoster(false, true);
 
 // check lms ext here
 $lms_info = $LAUNCH->ltiRawParameter('tool_consumer_info_product_family_code');
-
+$user_full_surname = $LAUNCH->ltiRawParameter('lis_person_name_family');
 $recipients_data = [];
 $docid = '';
 
@@ -30,6 +31,7 @@ if ($site_id == 6824) {
 
 $courseDetails = fetchWithBasicAuth($tool['coursesurl'] .'/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
 $courseproviders = fetchWithBasicAuth($tool['coursesurl'] .'providers/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
+
 $courseCode = explode('_', $courseDetails['data']['Code'])[0];
 $year = $courseDetails['data']['Semester']['Code'];
 // get results
@@ -52,7 +54,6 @@ if (str_contains($lms_info, 'sakai')) {
     //get all recepients
 
     $fullurl = $tool['coursesurl'] . 'classlist/' . $site_id;
-
     $allrecipients = fetchWithBasicAuth($fullurl, $tool['middleware_username'], $tool['middleware_password']);
 
     foreach ($reports as $report) {
@@ -75,7 +76,7 @@ $context = [
     'instructor' => $USER->instructor,
     'requesterid' => $USER->id,
     'requester_firstname' => $USER->firstname,
-    'requester_lastname' => $USER->lastname,
+    'requester_lastname' => $user_full_surname,
     'requester_email' => $USER->email,
     'stylesheets' => [addSession('static/css/app.css'), addSession('static/css/bootstrap-select.min.css')],
     'scripts' =>    [addSession('static/js/multiselect.min.js'), addSession('static/js/bootstrap-select.min.js')],
@@ -94,6 +95,9 @@ $context = [
     'running_reports_data' => json_encode($running_reports)
 ];
 
+// echo '<pre>' . var_export($LAUNCH, true) . '</pre>';
+// echo '<pre>' . var_export($context, true) . '</pre>';
+
 // admin section
 if ($USER->instructor){
 
@@ -104,15 +108,15 @@ if ($USER->instructor){
     $OUTPUT->topNav($menu);
     $OUTPUT->flashMessages();
     echo('<div class="container mt-5">
-    <div class="row align-items-center">
-        <div class="title col-md-6">
-            <h1 class="course-reports-heading">DASS Course Reports</h1>
-        </div>
-        <div class="col-md-6 text-right">
-            <a href="https://dass.uct.ac.za" target="_blank"><img src="static/reports/uct-dass-logo.png" alt="Logo" class="dass-logo img-fluid"></a>
-        </div>
-    </div>
-</div>');
+            <div class="row align-items-center">
+                <div class="title col-md-6">
+                    <h1 class="course-reports-heading">DASS Course Reports</h1>
+                </div>
+                <div class="col-md-6 text-right">
+                    <a href="https://dass.uct.ac.za" target="_blank"><img src="static/reports/uct-dass-logo.png" alt="Logo" class="dass-logo img-fluid"></a>
+                </div>
+            </div>
+        </div>');
 
     Template::view('templates/index.html', $context);
 
@@ -120,7 +124,6 @@ if ($USER->instructor){
     $OUTPUT->flashMessages();
     echo("<p>You do not have access to view this page.</p>\n");
 }
-
 
 $OUTPUT->footerStart();
 

@@ -37,27 +37,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result['success'] = $boreportsDAO->retryfailedboreport($input['id']) ? 1 : 0;
         $result['data'] = $result['success'] ? 'Retry triggered' : 'Error retrying';
 
-    }
-    else {
+    } else {
 
-    $result['success'] = $boreportsDAO->runboreport(
-        $input['site_id'],
-        $LAUNCH->ltiRawParameter('context_title'),
-        $input['year'],
-        $input['providers'],
-        $input['requester_id'],
-        $input['firstname'],
-        $input['lastname'],
-        $input['to'],
-        $input['report_type'],
-        $input['bo_id']
-        )? 1 : 0;
+        $result['success'] = $boreportsDAO->runboreport($input['site_id'],
+                                                        $LAUNCH->ltiRawParameter('context_title'),
+                                                        $input['year'],
+                                                        $input['providers'],
+                                                        $input['requester_id'],
+                                                        $input['firstname'],
+                                                        $input['lastname'],
+                                                        $input['to'],
+                                                        $input['report_type'],
+                                                        $input['bo_id']) ? 1 : 0;
 
-    $result['data'] = $result['success'] === 1 ? 'Inserted' : 'Error Inserting';
+        $result['data'] = $result['success'] === 1 ? 'Inserted' : 'Error Inserting';
     }
 }
-
 echo json_encode($result);
 exit;
-
 ?>
