@@ -60,4 +60,17 @@ class BOReportsDAO {
         }
     }
 
+    // run failed report again - just use ID and update status is database to processing or submitting
+    public function retryfailedboreport($id) {
+        try {
+            $this->PDOX->queryDie("UPDATE {$this->p}bo_reports_jobs
+                SET state = 'Submitting', modified_at = NOW()
+                WHERE id = :id",
+                array(':id' => $id));
+            return TRUE;
+        } catch (PDOException $e) {
+            return FALSE; // Handle error appropriately
+        }
+    }
+
 }

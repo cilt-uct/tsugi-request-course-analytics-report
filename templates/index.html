@@ -20,7 +20,7 @@
 {% } else { %}
 <div class="no-providers">
     There are no course codes associated directly with this
-        Amathuba site. To request a Know your Course and Students report for a specific course,
+        Amathuba site. To request a <a href="https://dass.uct.ac.za/know-your-course-students-kycs-reports" target="_blank">Know your Course and Students</a> report for a specific course,
         please access this via the Amathuba site for the course, or <a href="https://dass.uct.ac.za/submit-data-query" target="_blank">submit a data query</a>.</p></div>
 
 {% } %}
@@ -41,11 +41,15 @@
         </tr>
     {% foreach($running_reports as $run): %}
     <tr>
-        <td class="hidden">{% print($run['id'])%}</td>
+        <td class="hidden id">{% print($run['id'])%}</td>
         <td>{% print($run['provider_id'])%} {% print($run['term'])%}</td>
         <td>{% print($run['report_type'])%} </td>
         <td class="emails">{% print($run['data']) %}</td>
-        <td>{% print($run['state']) %}</td>
+        {% if ($run['state'] == 'Failed') { %}
+            <td class="status">{% print $run['state'] %}<a href="#" id="retry_bo_job" value={% print($run['id'])%} class="text-danger"> (Retry)</a></td>
+        {% } else { %}
+            <td class="status">{% print($run['state']) %}</td>
+        {% } %}
         <td>{% print($run['created_at']) %}</td>
     </tr>
         {% endforeach; %}

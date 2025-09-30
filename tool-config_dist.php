@@ -26,11 +26,6 @@ $tool['coursesurl'] = 'coursesurl';
 $tool['middleware_username'] = 'username';
 $tool['middleware_password'] = 'password';
 
-// server details
-$tool['bo_server_host'] = 'bo_server_host';
-$tool['server_username'] = 'server_username';
-$tool['server_password'] = 'server_password';
-
 // reports
 $reports = [
     [
