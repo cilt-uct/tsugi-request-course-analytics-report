@@ -333,11 +333,14 @@ input#email-input[disabled] {
 .courses-form-check {
     margin-top: 1rem;
 }
-.form-check a, .no-providers a {
+.form-check a,
+.no-providers a,
+p.available-reports a {
     color: #006fbf !important;
 }
 
 .form-check a:hover,
-.no-providers a:hover {
+.no-providers a:hover
+p .available-reports a:hover {
     text-decoration: underline;
 }

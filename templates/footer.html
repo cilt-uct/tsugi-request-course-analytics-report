@@ -7,6 +7,7 @@
         // Populate multiselect options
         let responseData = {{ $allrecepients }};
 
+
         $("input#kycsReports[type='radio']").each(function() {
             var radioId = $(this).attr('id');
             var targetDiv = $('div#' + radioId);
@@ -18,6 +19,16 @@
         // get providers, on radio click display providers
         let coursesData = {{ $course_providers_data }};
         // console.log(coursesData)
+
+        console.log(typeof coursesData);
+
+
+        // If coursesData is an array, proceed with the filtering
+        var formElement = document.getElementById('kycs_generate_form');
+        var availableReportsElement = document.querySelector('.available-reports');
+
+    // Check if coursesData is defined and has data
+
 
         let $selectPickerElement = $('#providers');
 
@@ -128,7 +139,6 @@
                 var emailResults = data.map(function(item) {
                     return item.email;
                 });
-
                 td.textContent = emailResults.join(', ');
             } catch (e) {
                 console.error('Error processing JSON:', e);

@@ -3,7 +3,9 @@
 {% if ($running_reports) { %}
 <p>One or more reports are being generated. This may take from several minutes to several hours depending on server load.</p>
 {% } else { %}
-<p>The following DASS course report(s) are available:</p>
+
+<p class="available-reports">The following DASS course report(s) are available:</p>
+
 {% } %}
 
 {% foreach($reports as $rep): %}

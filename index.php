@@ -25,7 +25,7 @@ $docid = '';
 $menu = false;
 
 // get course code from middleware: use the following 42271 as example
-if ($site_id == 6824) {
+if ($site_id == 6824 || empty($site_id) || $site_id == 456434513) {
     $site_id = 42271;
 }
 
@@ -34,14 +34,13 @@ $courseproviders = fetchWithBasicAuth($tool['coursesurl'] .'providers/'.$site_id
 
 $courseCode = explode('_', $courseDetails['data']['Code'])[0];
 $year = $courseDetails['data']['Semester']['Code'];
-// get results
-$reports_data = $PDOX->allRowsDie("SELECT * FROM bo_reports_jobs WHERE course_id = {$site_id}");
-$emails = array_column($reports_data, 'data');
-// runnung report
-$running_reports = $PDOX->allRowsDie("SELECT * FROM bo_reports_jobs WHERE course_id = {$site_id} and state != 'Completed' ");
 
 // get results
 $reports_data = $PDOX->allRowsDie("SELECT * FROM bo_reports_jobs WHERE course_id = {$site_id}");
+$emails = array_column($reports_data, 'data');
+
+// running report
+$running_reports = $PDOX->allRowsDie("SELECT * FROM bo_reports_jobs WHERE course_id = {$site_id} and state != 'Completed' ");
 
 if (str_contains($lms_info, 'sakai')) {
     // display any admin params needed here
@@ -50,7 +49,7 @@ if (str_contains($lms_info, 'sakai')) {
     $recipients_data = $PDOX->allRowsDie("SELECT lti_user.user_id,lti_user.displayname, context_id, lti_user.email, JSON_UNQUOTE(ifnull(JSON_EXTRACT(lti_user.`json`,'$.sourcedId'), LOWER(SUBSTRING(lti_user.email, 1, LOCATE('@', lti_user.email) - 1)))) as eid, user_key FROM lti_user,lti_membership
     where lti_user.user_id=lti_membership.user_id and context_id={$CONTEXT->id} order by displayname");
 
-} else if (str_contains($lms_info, 'desire2learn')){
+} else if (str_contains($lms_info, 'desire2learn') || str_contains($lms_info, 'ims')) {
     //get all recepients
 
     $fullurl = $tool['coursesurl'] . 'classlist/' . $site_id;
