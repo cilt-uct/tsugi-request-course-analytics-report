@@ -5,6 +5,10 @@ $REGISTER_LTI2 = array(
 "FontAwesome" => "fa-chart-bar",
 "short_name" => "Course Reports",
 "description" => "An on-demand tool that generates course reports",
-"messages" => array("launch")
+"messages" => array("launch"),
+"privacy_level" => "anonymous",
+"license" => "Apache",
+"languages" => array("English"),
+"analytics" => array("internal"),
 );
 
