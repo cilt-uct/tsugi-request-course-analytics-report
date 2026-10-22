@@ -31,7 +31,7 @@ if ($site_id == 6824 || empty($site_id) || $site_id == 456434513) {
     $test_site = true;
 }
 
-if ($CONTEXT->id == 1) {
+if ($CONTEXT->key == 12345) {
     $test_site = true;
 }
 
@@ -78,6 +78,8 @@ if (str_contains($lms_info, 'sakai')) {
 }
 
 $context = [
+    'context_id' => $CONTEXT->id,
+    'context_key' => $CONTEXT->key,
     'instructor' => $USER->instructor,
     'requesterid' => $USER->id,
     'requester_firstname' => $USER->firstname,

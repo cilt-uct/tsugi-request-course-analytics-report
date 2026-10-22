@@ -20,15 +20,17 @@ header("Content-Type: application/json");
 
 $result = ['success' => 0, 'data' => 'Invalid request method. Please use POST.'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($CONTEXT->key == 12345) {
+        echo json_encode(['status' => 'error', 'message' => 'Test context']);
+        exit;
+    }
 
     $rawInput = file_get_contents('php://input');
-
+    $input = json_decode($rawInput, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
         echo json_encode(['status' => 'error', 'message' => 'Invalid JSON input']);
         exit;
     }
-
-    $input = json_decode($rawInput, true);
 
     $boreportsDAO = new BOReportsDAO($PDOX, $CFG->dbprefix);
 
