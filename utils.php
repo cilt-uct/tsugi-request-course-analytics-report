@@ -19,11 +19,8 @@ function fetchWithBasicAuth($url, $username, $password) {
     // Check for errors
     if ($response === false) {
         $error = curl_error($ch);
-        curl_close($ch);
         throw new Exception('cURL Error: ' . $error);
     }
-
-    curl_close($ch);
 
     // Output the raw response for debugging
 
