@@ -73,7 +73,14 @@
         <div id="email-container" class="email-container">
             The report(s) will be emailed to: {{$requester_email}}
         </div>
-        <button type="submit" class="btn btn-success mt-5" id="btn-send-email" name="btn-send-email">Email Report</button>
+        <button type="submit" class="btn btn-success mt-5" id="btn-send-email" name="btn-send-email" data-test-site="{% print($test_site ? 'true' : 'false') %}" {% if ($test_site) { %} disabled {% } %}>Email Report</button>
+        {% if ($test_site) { %}
+        <br/><br/>
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-circle"></i>
+            This is a test site - submitting reports is unavailable.
+        </div>
+        {% } %}
     {% } %}
 </form>
 

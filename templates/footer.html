@@ -148,6 +148,10 @@
 
         // disable submit bn if empty
         function checkConditions() {
+            if ($('#btn-send-email').attr('data-test-site') === 'true') {
+                return;
+            }
+
             const anyCheckboxChecked = $('#providers input[type="checkbox"]:checked').length > 0;
 
             if (anyCheckboxChecked) {

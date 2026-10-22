@@ -23,10 +23,16 @@ $recipients_data = [];
 $docid = '';
 
 $menu = false;
+$test_site = false;
 
 // get course code from middleware: use the following 42271 as example
 if ($site_id == 6824 || empty($site_id) || $site_id == 456434513) {
     $site_id = 42271;
+    $test_site = true;
+}
+
+if ($CONTEXT->id == 1) {
+    $test_site = true;
 }
 
 $courseDetails = fetchWithBasicAuth($tool['coursesurl'] .'/'.$site_id, $tool['middleware_username'], $tool['middleware_password']);
@@ -81,6 +87,7 @@ $context = [
     'scripts' =>    [addSession('static/js/multiselect.min.js'), addSession('static/js/bootstrap-select.min.js')],
     'reports' => $reports,
     'siteid' => $site_id,
+    'test_site' => $test_site,
     'allrecepients' => $recipients_data,
     'bo_id' => $docid,
     'year' => $year,
